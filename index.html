@@ -109,7 +109,6 @@
 
         .leaflet-top.leaflet-right .leaflet-control {
             margin-top: 250px;
-            /* Diturunkan agar tidak menabrak toolbar custom */
             margin-right: 24px;
         }
 
@@ -173,7 +172,7 @@
             <ul class="space-y-1.5">
                 <li>
                     <button onclick="showPage('home')" id="nav-home"
-                        class="nav-btn w-full flex items-center px-4 py-3 rounded-xl transition-all duration-300 font-semibold bg-gradient-to-r from-blue-50 to-white text-primary border-l-4 border-primary shadow-sm">
+                        class="nav-btn active w-full flex items-center px-4 py-3 rounded-xl transition-all duration-300 font-semibold bg-gradient-to-r from-blue-50 to-white text-primary border-l-4 border-primary shadow-sm">
                         <i class="fa-solid fa-house w-6 text-center text-lg"></i>
                         <span class="ml-2 text-sm tracking-wide">Beranda</span>
                     </button>
@@ -233,7 +232,7 @@
     <main class="flex-1 flex flex-col h-screen relative bg-[#f4f7fb]">
 
         <header
-            class="h-[72px] bg-white/80 backdrop-blur-md border-b border-slate-200 flex items-center justify-between px-8 z-10 sticky top-0 shadow-[0_4px_20px_rgba(0,0,0,0.01)]">
+            class="h-[72px] bg-white/80 backdrop-blur-md border-b border-slate-200 flex items-center justify-between px-8 z-[30] sticky top-0 shadow-[0_4px_20px_rgba(0,0,0,0.01)]">
             <h2 id="page-title" class="font-bold text-xl text-slate-800 tracking-tight">Beranda</h2>
             <div class="flex items-center space-x-4">
                 <div class="relative group">
@@ -308,7 +307,7 @@
                 </div>
 
                 <div class="absolute top-6 right-6 z-[400] glass-panel p-1.5 rounded-2xl flex flex-col space-y-1.5">
-                    <button onclick="map.setView([-6.475, 106.840], 11)"
+                    <button onclick="map.setView([-6.550, 106.830], 10)"
                         class="w-10 h-10 rounded-xl flex items-center justify-center text-slate-600 hover:bg-white hover:text-primary hover:shadow-sm transition-all"
                         title="Reset Tampilan">
                         <i class="fa-solid fa-house"></i>
@@ -688,7 +687,8 @@
     </main>
 
     <script>
-        // --- Tab Navigation Logic Modern ---
+        // --- 1. Tab Navigation Logic ---
+        // FIX: Hapus pemanggilan 'event.currentTarget' yang menyebabkan crash "event is undefined"
         function showPage(pageId) {
             document.querySelectorAll('.page-content').forEach(el => {
                 el.classList.add('hidden');
@@ -696,9 +696,11 @@
             });
 
             const selectedPage = document.getElementById('page-' + pageId);
-            selectedPage.classList.remove('hidden');
-            void selectedPage.offsetWidth;
-            selectedPage.classList.add('fade-in');
+            if(selectedPage) {
+                selectedPage.classList.remove('hidden');
+                void selectedPage.offsetWidth;
+                selectedPage.classList.add('fade-in');
+            }
 
             const titles = {
                 'home': 'Beranda Utama',
@@ -709,28 +711,28 @@
             };
             document.getElementById('page-title').innerText = titles[pageId];
 
-            // Reset style semua tombol navigasi ke default
             document.querySelectorAll('.nav-btn').forEach(btn => {
                 btn.className = "nav-btn w-full flex items-center px-4 py-3 rounded-xl text-slate-500 hover:bg-slate-50 hover:text-primary transition-all duration-300 font-medium border-l-4 border-transparent";
             });
 
-            // Set style tombol navigasi yang aktif (Gradient bg, text bold)
-            const currentBtn = event.currentTarget || document.getElementById('nav-' + pageId);
+            // Set tombol yang aktif menggunakan ID secara langsung
+            const currentBtn = document.getElementById('nav-' + pageId);
             if (currentBtn) {
                 currentBtn.className = "nav-btn active w-full flex items-center px-4 py-3 rounded-xl transition-all duration-300 font-semibold bg-gradient-to-r from-blue-50 to-white text-primary border-l-4 border-primary shadow-sm";
             }
 
             if (pageId === 'map') {
                 setTimeout(() => {
-                    map.invalidateSize();
-                }, 200);
+                    map.invalidateSize(); // Me-render ulang kanvas Leaflet setelah di-unhide
+                }, 300);
             }
         }
 
-        // --- Leaflet JS Map Initialization ---
+        // --- 2. Leaflet JS Map Initialization ---
+        // FIX: Inisialisasi peta diarahkan ke tengah Kabupaten Bogor
         const map = L.map('map-container', {
             zoomControl: false
-        }).setView([-6.475, 106.840], 11);
+        }).setView([-6.550, 106.830], 10);
 
         L.control.zoom({ position: 'topright' }).addTo(map);
 
@@ -751,45 +753,45 @@
 
         osm.addTo(map);
 
-        // Styling Poligon Bersih & Minimalis
+        // Styling Poligon
         const styleAdmin = { color: '#0B4A7F', weight: 2.5, dashArray: '5, 5', fillOpacity: 0.03 };
         const styleInd = { color: '#64748b', fillColor: '#64748b', fillOpacity: 0.4, weight: 1.5 };
         const stylePerum = { color: '#facc15', fillColor: '#facc15', fillOpacity: 0.35, weight: 1.5, radius: 1200 };
 
-        // --- INTEGRASI GEOJSON BATAS ADMINISTRASI QGIS2WEB ---
-        let layerAdmin = L.layerGroup().addTo(map); // Buat layer kosong terlebih dahulu
+        // --- 3. INTEGRASI GEOJSON BATAS ADMINISTRASI QGIS2WEB ---
+        let layerAdmin = L.layerGroup().addTo(map);
 
-        // Memeriksa apakah variabel data dari script qgis2web tersedia
         if (typeof json_BATAS_ADMINISTRASI_KEC_LN_0 !== 'undefined') {
-            layerAdmin = L.geoJSON(json_BATAS_ADMINISTRASI_KEC_LN_0, {
+            const adminGeoJson = L.geoJSON(json_BATAS_ADMINISTRASI_KEC_LN_0, {
                 style: styleAdmin,
                 onEachFeature: function (feature, layer) {
-                    // Ambil properti nama dari atribut qgis (biasanya WADMKC/NAMOBJ untuk Kecamatan atau WADMKD untuk Desa)
                     let namaDaerah = feature.properties.NAMOBJ || feature.properties.WADMKC || feature.properties.WADMKD || "Area Administrasi";
 
                     let popupContent = "<div class='text-center py-1'><b class='text-slate-800 text-sm font-bold'>Batas Administrasi</b><br><span class='text-xs text-slate-500'>" + namaDaerah + "</span></div>";
                     layer.bindPopup(popupContent);
 
-                    // Menambahkan interaksi hover individual
+                    // FIX: Perbaikan Logic hover agar resetStyle berfungsi
                     layer.on({
                         mouseover: function (e) {
                             var l = e.target;
-                            l.setStyle({ weight: 3, fillOpacity: 0.2, color: '#F59E0B' });
+                            l.setStyle({ weight: 4, color: '#F59E0B' });
                             if (!L.Browser.ie && !L.Browser.opera && !L.Browser.edge) {
                                 l.bringToFront();
                             }
                         },
                         mouseout: function (e) {
-                            layerAdmin.resetStyle(e.target);
+                            adminGeoJson.resetStyle(e.target);
                         }
                     });
                 }
-            }).addTo(map);
+            });
+            
+            layerAdmin.addLayer(adminGeoJson);
 
-            // Fokuskan (zoom) kamera agar pas menyorot bounding box layer administrasi ini
-            map.fitBounds(layerAdmin.getBounds());
+            // FIX: Hapus map.fitBounds(...) di sini untuk menghindari Crash "Bounds are not valid" pada Hidden Map
+            // Map tidak boleh difokuskan jika tab-nya (display) masih dalam status "none" saat halaman diload.
         } else {
-            console.warn("File data/BATAS_ADMINISTRASI_KEC_LN_0.js belum terpanggil atau variabel tidak ditemukan.");
+            console.warn("File BATAS_ADMINISTRASI_KEC_LN_0.js tidak dimuat. Pastikan file berada di folder yang sama.");
         }
 
 
@@ -834,17 +836,17 @@
         });
 
         document.getElementById('cb-admin').addEventListener('change', function (e) {
-            if (e.target.checked) layerAdmin.addTo(map);
+            if (e.target.checked) map.addLayer(layerAdmin);
             else map.removeLayer(layerAdmin);
         });
 
         document.getElementById('cb-industri').addEventListener('change', function (e) {
-            if (e.target.checked) layerIndustri.addTo(map);
+            if (e.target.checked) map.addLayer(layerIndustri);
             else map.removeLayer(layerIndustri);
         });
 
         document.getElementById('cb-perumahan').addEventListener('change', function (e) {
-            if (e.target.checked) layerPerumahan.addTo(map);
+            if (e.target.checked) map.addLayer(layerPerumahan);
             else map.removeLayer(layerPerumahan);
         });
 
