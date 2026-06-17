@@ -18,8 +18,8 @@
                         sans: ['"Plus Jakarta Sans"', 'sans-serif'],
                     },
                     colors: {
-                        primary: '#0B4A7F',
-                        secondary: '#F59E0B',
+                        primary: '#0B4A7F',    /* Biru Khas Web DPTR Bogor */
+                        secondary: '#F59E0B',  /* Aksen Kuning/Emas DPTR */
                         slate: {
                             50: '#f8fafc',
                             100: '#f1f5f9',
@@ -43,7 +43,6 @@
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 
     <script src="BATAS_ADMINISTRASI_KEC_LN_0.js"></script>
-    <script src="BATAS_ADMINISTRASI_DESA_0.js"></script>
 
     <style>
         body {
@@ -54,9 +53,9 @@
 
         #map-container {
             height: calc(100vh - 72px);
-            z-index: 10;
         }
 
+        /* Custom Scrollbar Minimalis & Halus */
         ::-webkit-scrollbar {
             width: 6px;
             height: 6px;
@@ -75,6 +74,7 @@
             background: #94a3b8;
         }
 
+        /* Custom Checkbox (Tailwind Accent) */
         input[type="checkbox"] {
             accent-color: #0B4A7F;
             cursor: pointer;
@@ -83,6 +83,7 @@
             border-radius: 4px;
         }
 
+        /* Leaflet Control Overrides for Clean Modern Look */
         .leaflet-bar {
             border: 1px solid rgba(226, 232, 240, 0.8) !important;
             box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06) !important;
@@ -122,6 +123,7 @@
             box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
         }
 
+        /* Glassmorphism Premium */
         .glass-panel {
             background: rgba(255, 255, 255, 0.85);
             backdrop-filter: blur(16px);
@@ -130,6 +132,7 @@
             box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05), 0 8px 10px -6px rgba(0, 0, 0, 0.01);
         }
 
+        /* Animations */
         .fade-in {
             animation: fadeIn 0.4s cubic-bezier(0.16, 1, 0.3, 1);
         }
@@ -230,7 +233,7 @@
 
         <header
             class="h-[72px] bg-white/80 backdrop-blur-md border-b border-slate-200 flex items-center justify-between px-8 z-[30] sticky top-0 shadow-[0_4px_20px_rgba(0,0,0,0.01)]">
-            <h2 id="page-title" class="font-bold text-xl text-slate-800 tracking-tight">Beranda Utama</h2>
+            <h2 id="page-title" class="font-bold text-xl text-slate-800 tracking-tight">Beranda</h2>
             <div class="flex items-center space-x-4">
                 <div class="relative group">
                     <input type="text" placeholder="Cari area, nomor persil..."
@@ -248,7 +251,7 @@
 
         <div class="flex-1 overflow-y-auto relative">
 
-            <div id="page-home" class="page-content h-full fade-in block">
+            <div id="page-home" class="page-content h-full fade-in">
                 <div class="relative w-full h-full flex items-center justify-center overflow-hidden">
                     <div
                         class="absolute inset-0 bg-[url('https://bogorkab.go.id/assets/images/tegarBeriman.jpeg')] bg-cover bg-center transform scale-105 hover:scale-100 transition duration-[5000ms] ease-out">
@@ -295,7 +298,7 @@
                 </div>
             </div>
 
-            <div id="page-map" class="page-content hidden h-full w-full relative bg-slate-100">
+            <div id="page-map" class="page-content hidden h-full w-full relative fade-in bg-slate-100">
 
                 <div
                     class="absolute top-6 left-1/2 transform -translate-x-1/2 z-[400] glass-panel px-3 py-1.5 rounded-lg text-[10px] font-bold text-slate-600 flex items-center space-x-1.5 uppercase tracking-widest border-t-[3px] border-t-red-500">
@@ -320,6 +323,11 @@
                         title="Identifikasi Objek">
                         <i class="fa-solid fa-circle-info"></i>
                     </button>
+                    <button
+                        class="w-10 h-10 rounded-xl flex items-center justify-center text-slate-600 hover:bg-white hover:text-primary hover:shadow-sm transition-all"
+                        title="Cetak Peta">
+                        <i class="fa-solid fa-print"></i>
+                    </button>
                 </div>
 
                 <div
@@ -337,18 +345,12 @@
                                 Administrasi</h5>
                             <div class="space-y-3">
                                 <label class="flex items-center space-x-3 cursor-pointer group">
-                                    <input type="checkbox" id="cb-admin-kec"
+                                    <input type="checkbox" id="cb-admin"
                                         class="w-4 h-4 text-primary border-slate-300 rounded focus:ring-primary focus:ring-offset-1 transition"
                                         checked>
                                     <span
-                                        class="text-slate-600 group-hover:text-primary font-medium transition-colors text-sm">Batas Kecamatan</span>
-                                </label>
-                                <label class="flex items-center space-x-3 cursor-pointer group">
-                                    <input type="checkbox" id="cb-admin-desa"
-                                        class="w-4 h-4 text-primary border-slate-300 rounded focus:ring-primary focus:ring-offset-1 transition"
-                                        checked>
-                                    <span
-                                        class="text-slate-600 group-hover:text-primary font-medium transition-colors text-sm">Batas Desa/Kelurahan</span>
+                                        class="text-slate-600 group-hover:text-primary font-medium transition-colors text-sm">Batas
+                                        Administrasi</span>
                                 </label>
                             </div>
                         </div>
@@ -395,7 +397,7 @@
                 <div
                     class="absolute bottom-6 left-1/2 transform -translate-x-1/2 z-[400] glass-panel px-4 py-2 rounded-full text-xs font-semibold text-slate-600 flex items-center space-x-2">
                     <i class="fa-solid fa-crosshairs text-primary"></i>
-                    <span id="coord-display" class="tracking-widest">Lat: 0.00000 | Lng: 0.00000</span>
+                    <span id="coord-display" class="tracking-widest">Lat: -6.47510 | Lng: 106.84010</span>
                 </div>
 
                 <div class="absolute bottom-6 right-6 z-[400] glass-panel p-4 rounded-2xl w-[220px]">
@@ -405,15 +407,17 @@
                     </h4>
                     <div class="space-y-2.5">
                         <div class="flex items-center text-slate-600 text-xs font-medium"><span
-                                class="w-3.5 h-0.5 bg-[#0B4A7F] inline-block mr-3 shadow-sm border border-[#0B4A7F]"></span>Batas Kecamatan</div>
-                        <div class="flex items-center text-slate-600 text-xs font-medium"><span
-                                class="w-3.5 h-0.5 bg-[#10B981] inline-block mr-3 shadow-sm border border-[#10B981]"></span>Batas Desa</div>
-                        <div class="flex items-center text-slate-600 text-xs font-medium"><span
                                 class="w-3.5 h-3.5 bg-yellow-400 inline-block mr-3 rounded-sm shadow-sm border border-yellow-500"></span>Zona
                             Perumahan</div>
                         <div class="flex items-center text-slate-600 text-xs font-medium"><span
+                                class="w-3.5 h-3.5 bg-red-500 inline-block mr-3 rounded-sm shadow-sm border border-red-600"></span>Zona
+                            Perdagangan</div>
+                        <div class="flex items-center text-slate-600 text-xs font-medium"><span
                                 class="w-3.5 h-3.5 bg-slate-500 inline-block mr-3 rounded-sm shadow-sm border border-slate-600"></span>Zona
                             Industri</div>
+                        <div class="flex items-center text-slate-600 text-xs font-medium"><span
+                                class="w-3.5 h-3.5 bg-green-500 inline-block mr-3 rounded-sm shadow-sm border border-green-600"></span>Zona
+                            RTH</div>
                     </div>
                 </div>
 
@@ -428,30 +432,134 @@
                             <p class="text-slate-500 text-sm mt-1">Ringkasan peruntukan pola ruang Kabupaten Bogor
                                 (Update: Juni 2026)</p>
                         </div>
+                        <button
+                            class="px-5 py-2.5 bg-white border border-slate-200 text-slate-700 rounded-xl text-sm font-semibold hover:bg-slate-50 hover:text-primary hover:border-slate-300 transition-all shadow-sm flex items-center group">
+                            <i
+                                class="fa-solid fa-download mr-2 text-slate-400 group-hover:text-primary transition-colors"></i>
+                            Ekspor Laporan
+                        </button>
                     </div>
 
                     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5 mb-8">
                         <div
                             class="bg-white rounded-2xl shadow-sm p-6 border border-slate-100 hover:shadow-lg hover:-translate-y-1 transition-all duration-300 group cursor-default">
+                            <div class="flex items-center justify-between mb-4">
+                                <div
+                                    class="w-12 h-12 rounded-xl bg-gradient-to-br from-blue-50 to-blue-100 text-primary flex items-center justify-center group-hover:scale-110 transition-transform">
+                                    <i class="fa-solid fa-map text-lg"></i>
+                                </div>
+                                <span
+                                    class="text-[10px] font-bold text-green-600 bg-green-50 px-2.5 py-1 rounded-full border border-green-100">+1.2%</span>
+                            </div>
                             <p class="text-sm text-slate-500 font-medium mb-1">Total Luas Wilayah</p>
                             <h4 class="text-3xl font-extrabold text-slate-800 tracking-tight">299.178 <span
                                     class="text-sm font-semibold text-slate-400 ml-1">Ha</span></h4>
                         </div>
                         <div
                             class="bg-white rounded-2xl shadow-sm p-6 border border-slate-100 hover:shadow-lg hover:-translate-y-1 transition-all duration-300 group cursor-default">
+                            <div class="flex items-center justify-between mb-4">
+                                <div
+                                    class="w-12 h-12 rounded-xl bg-gradient-to-br from-emerald-50 to-emerald-100 text-emerald-600 flex items-center justify-center group-hover:scale-110 transition-transform">
+                                    <i class="fa-solid fa-city text-lg"></i>
+                                </div>
+                            </div>
                             <p class="text-sm text-slate-500 font-medium mb-1">Jumlah Kecamatan</p>
                             <h4 class="text-3xl font-extrabold text-slate-800 tracking-tight">40</h4>
                         </div>
                         <div
                             class="bg-white rounded-2xl shadow-sm p-6 border border-slate-100 hover:shadow-lg hover:-translate-y-1 transition-all duration-300 group cursor-default">
+                            <div class="flex items-center justify-between mb-4">
+                                <div
+                                    class="w-12 h-12 rounded-xl bg-gradient-to-br from-amber-50 to-amber-100 text-secondary flex items-center justify-center group-hover:scale-110 transition-transform">
+                                    <i class="fa-solid fa-house-chimney text-lg"></i>
+                                </div>
+                            </div>
                             <p class="text-sm text-slate-500 font-medium mb-1">Desa / Kelurahan</p>
                             <h4 class="text-3xl font-extrabold text-slate-800 tracking-tight">435</h4>
                         </div>
                         <div
                             class="bg-white rounded-2xl shadow-sm p-6 border border-slate-100 hover:shadow-lg hover:-translate-y-1 transition-all duration-300 group cursor-default">
+                            <div class="flex items-center justify-between mb-4">
+                                <div
+                                    class="w-12 h-12 rounded-xl bg-gradient-to-br from-rose-50 to-rose-100 text-red-500 flex items-center justify-center group-hover:scale-110 transition-transform">
+                                    <i class="fa-solid fa-industry text-lg"></i>
+                                </div>
+                            </div>
                             <p class="text-sm text-slate-500 font-medium mb-1">Kawasan Industri (KPI)</p>
                             <h4 class="text-3xl font-extrabold text-slate-800 tracking-tight">9.278 <span
                                     class="text-sm font-semibold text-slate-400 ml-1">Ha</span></h4>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                        <div
+                            class="lg:col-span-2 bg-white rounded-2xl shadow-sm border border-slate-100 p-8 hover:shadow-md transition-shadow">
+                            <h4 class="font-bold text-slate-800 mb-6 flex items-center">
+                                <i class="fa-solid fa-chart-bar text-primary mr-3"></i> Proporsi Tata Ruang (RTRW)
+                            </h4>
+                            <div class="space-y-6">
+                                <div>
+                                    <div class="flex justify-between text-sm mb-2"><span
+                                            class="font-semibold text-slate-600">Kawasan Lindung</span><span
+                                            class="text-slate-700 font-bold">35%</span></div>
+                                    <div class="w-full bg-slate-100 rounded-full h-3 overflow-hidden">
+                                        <div class="bg-emerald-500 h-3 rounded-full relative">
+                                            <div class="absolute inset-0 bg-white/20"></div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div>
+                                    <div class="flex justify-between text-sm mb-2"><span
+                                            class="font-semibold text-slate-600">Kawasan Budidaya Pertanian</span><span
+                                            class="text-slate-700 font-bold">40%</span></div>
+                                    <div class="w-full bg-slate-100 rounded-full h-3 overflow-hidden">
+                                        <div class="bg-yellow-400 h-3 rounded-full relative">
+                                            <div class="absolute inset-0 bg-white/20"></div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div>
+                                    <div class="flex justify-between text-sm mb-2"><span
+                                            class="font-semibold text-slate-600">Kawasan Permukiman</span><span
+                                            class="text-slate-700 font-bold">15%</span></div>
+                                    <div class="w-full bg-slate-100 rounded-full h-3 overflow-hidden">
+                                        <div class="bg-orange-400 h-3 rounded-full relative">
+                                            <div class="absolute inset-0 bg-white/20"></div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div>
+                                    <div class="flex justify-between text-sm mb-2"><span
+                                            class="font-semibold text-slate-600">Kawasan Industri &
+                                            Perdagangan</span><span class="text-slate-700 font-bold">10%</span></div>
+                                    <div class="w-full bg-slate-100 rounded-full h-3 overflow-hidden">
+                                        <div class="bg-red-500 h-3 rounded-full relative">
+                                            <div class="absolute inset-0 bg-white/20"></div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div
+                            class="bg-gradient-to-br from-primary to-blue-900 rounded-2xl shadow-md p-8 flex flex-col justify-center items-center text-center relative overflow-hidden group">
+                            <div
+                                class="absolute -right-10 -top-10 w-48 h-48 bg-white rounded-full opacity-5 blur-3xl group-hover:opacity-10 transition-opacity duration-500">
+                            </div>
+                            <div
+                                class="absolute -left-10 -bottom-10 w-32 h-32 bg-secondary rounded-full opacity-10 blur-2xl group-hover:opacity-20 transition-opacity duration-500">
+                            </div>
+
+                            <div
+                                class="w-32 h-32 rounded-full border-8 border-white/10 flex items-center justify-center mb-6 relative z-10 group-hover:scale-105 transition-transform duration-500">
+                                <div
+                                    class="bg-white rounded-full w-24 h-24 flex flex-col items-center justify-center shadow-[inset_0_2px_10px_rgba(0,0,0,0.1)]">
+                                    <i class="fa-solid fa-server text-3xl text-primary mb-1"></i>
+                                    <span
+                                        class="text-[10px] font-extrabold text-slate-400 uppercase tracking-widest mt-1">PostGIS</span>
+                                </div>
+                            </div>
+                            <h4 class="text-white font-bold text-xl mb-1.5 tracking-tight">Server Terkoneksi</h4>
+                            <p class="text-sm text-blue-100/80 font-medium">Sinkronisasi data SHP real-time</p>
                         </div>
                     </div>
                 </div>
@@ -474,6 +582,11 @@
                                 Perda RTRW Kab. Bogor</h4>
                             <p class="text-sm text-slate-500 mb-6 leading-relaxed">Dokumen legal Rencana Tata Ruang
                                 Wilayah terbaru untuk panduan penataan daerah.</p>
+                            <a href="RTRW Kab Bogor.pdf" download="RTRW Kab Bogor.pdf"
+                                class="mt-auto inline-flex items-center text-primary text-sm font-bold hover:text-red-600 transition-colors w-fit">
+                                Download PDF <i
+                                    class="fa-solid fa-arrow-down ml-2 text-xs bg-primary/10 p-1.5 rounded-full group-hover:bg-red-100"></i>
+                            </a>
                         </div>
                         <div
                             class="bg-white p-7 rounded-2xl shadow-sm border border-slate-100 hover:shadow-xl hover:-translate-y-1.5 transition-all duration-300 group cursor-pointer relative overflow-hidden flex flex-col">
@@ -487,6 +600,27 @@
                                 RDTR Kawasan Cibinong</h4>
                             <p class="text-sm text-slate-500 mb-6 leading-relaxed">Rencana Detail Tata Ruang Wilayah
                                 yang mencakup regulasi dan zonasi tingkat BWP.</p>
+                            <span
+                                class="mt-auto inline-flex items-center text-primary text-sm font-bold group-hover:underline w-fit">
+                                Lihat Dokumen <i class="fa-solid fa-arrow-right ml-2 text-xs"></i>
+                            </span>
+                        </div>
+                        <div
+                            class="bg-white p-7 rounded-2xl shadow-sm border border-slate-100 hover:shadow-xl hover:-translate-y-1.5 transition-all duration-300 group cursor-pointer relative overflow-hidden flex flex-col">
+                            <div class="absolute top-0 left-0 w-full h-1.5 bg-emerald-500"></div>
+                            <div
+                                class="w-14 h-14 bg-emerald-50 text-emerald-600 rounded-xl flex items-center justify-center mb-5 group-hover:scale-110 group-hover:bg-emerald-500 group-hover:text-white transition-all duration-300 shadow-sm">
+                                <i class="fa-solid fa-database text-2xl"></i>
+                            </div>
+                            <h4
+                                class="font-bold text-lg text-slate-800 mb-2 group-hover:text-primary transition-colors">
+                                Shapefile (SHP) Admin</h4>
+                            <p class="text-sm text-slate-500 mb-6 leading-relaxed">Geodatabase batas administrasi
+                                wilayah yang telah diverifikasi oleh BIG.</p>
+                            <span
+                                class="mt-auto inline-flex items-center text-primary text-sm font-bold group-hover:underline w-fit">
+                                Request Data <i class="fa-solid fa-arrow-right ml-2 text-xs"></i>
+                            </span>
                         </div>
                     </div>
                 </div>
@@ -509,6 +643,43 @@
                         menyelenggarakan urusan pemerintahan di bidang pertanahan dan tata ruang yang menjadi kewenangan
                         daerah, guna mewujudkan penataan wilayah yang terpadu dan berkelanjutan.
                     </p>
+                    <h3 class="text-xl font-bold text-slate-800 mb-5">Struktur Organisasi</h3>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <div
+                            class="p-4 rounded-xl border border-slate-200/60 bg-slate-50 flex items-center text-sm hover:bg-white hover:border-primary/30 hover:shadow-md transition-all group">
+                            <div
+                                class="w-10 h-10 rounded-lg bg-white flex items-center justify-center border border-slate-200 mr-3 group-hover:border-primary/30 group-hover:text-primary transition-colors">
+                                <i class="fa-solid fa-sitemap text-slate-400 group-hover:text-primary"></i>
+                            </div>
+                            <span class="font-semibold text-slate-700 group-hover:text-primary">Bidang Pengadaan
+                                Tanah</span>
+                        </div>
+                        <div
+                            class="p-4 rounded-xl border border-slate-200/60 bg-slate-50 flex items-center text-sm hover:bg-white hover:border-primary/30 hover:shadow-md transition-all group">
+                            <div
+                                class="w-10 h-10 rounded-lg bg-white flex items-center justify-center border border-slate-200 mr-3 group-hover:border-primary/30 group-hover:text-primary transition-colors">
+                                <i class="fa-solid fa-map-location text-slate-400 group-hover:text-primary"></i>
+                            </div>
+                            <span class="font-semibold text-slate-700 group-hover:text-primary">Bidang Tata Ruang</span>
+                        </div>
+                        <div
+                            class="p-4 rounded-xl border border-slate-200/60 bg-slate-50 flex items-center text-sm hover:bg-white hover:border-primary/30 hover:shadow-md transition-all group">
+                            <div
+                                class="w-10 h-10 rounded-lg bg-white flex items-center justify-center border border-slate-200 mr-3 group-hover:border-primary/30 group-hover:text-primary transition-colors">
+                                <i class="fa-solid fa-layer-group text-slate-400 group-hover:text-primary"></i>
+                            </div>
+                            <span class="font-semibold text-slate-700 group-hover:text-primary">Bidang Pertanahan</span>
+                        </div>
+                        <div
+                            class="p-4 rounded-xl border border-slate-200/60 bg-slate-50 flex items-center text-sm hover:bg-white hover:border-primary/30 hover:shadow-md transition-all group">
+                            <div
+                                class="w-10 h-10 rounded-lg bg-white flex items-center justify-center border border-slate-200 mr-3 group-hover:border-primary/30 group-hover:text-primary transition-colors">
+                                <i class="fa-solid fa-shield-halved text-slate-400 group-hover:text-primary"></i>
+                            </div>
+                            <span class="font-semibold text-slate-700 group-hover:text-primary">Bidang Pengendalian
+                                Ruang</span>
+                        </div>
+                    </div>
                 </div>
             </div>
 
@@ -516,20 +687,17 @@
     </main>
 
     <script>
-        // Variabel penanda inisialisasi Map
-        let isMapInitialized = false;
-
         // --- 1. Tab Navigation Logic ---
+        // FIX: Hapus pemanggilan 'event.currentTarget' yang menyebabkan crash "event is undefined"
         function showPage(pageId) {
             document.querySelectorAll('.page-content').forEach(el => {
                 el.classList.add('hidden');
-                el.classList.remove('fade-in', 'block');
+                el.classList.remove('fade-in');
             });
 
             const selectedPage = document.getElementById('page-' + pageId);
-            if(selectedPage) {
+            if (selectedPage) {
                 selectedPage.classList.remove('hidden');
-                selectedPage.classList.add('block');
                 void selectedPage.offsetWidth;
                 selectedPage.classList.add('fade-in');
             }
@@ -547,32 +715,21 @@
                 btn.className = "nav-btn w-full flex items-center px-4 py-3 rounded-xl text-slate-500 hover:bg-slate-50 hover:text-primary transition-all duration-300 font-medium border-l-4 border-transparent";
             });
 
+            // Set tombol yang aktif menggunakan ID secara langsung
             const currentBtn = document.getElementById('nav-' + pageId);
             if (currentBtn) {
                 currentBtn.className = "nav-btn active w-full flex items-center px-4 py-3 rounded-xl transition-all duration-300 font-semibold bg-gradient-to-r from-blue-50 to-white text-primary border-l-4 border-primary shadow-sm";
             }
 
-            // FIX UTAMA: Penanganan render Peta saat hidden div dibuka
             if (pageId === 'map') {
                 setTimeout(() => {
-                    map.invalidateSize();
-                    
-                    // Zoom out ke wilayah Bogor setelah Peta dirender (hanya sekali)
-                    if (!isMapInitialized) {
-                        let bounds = null;
-                        if (layerAdminKec.getLayers().length > 0) {
-                            bounds = layerAdminKec.getLayers()[0].getBounds();
-                        }
-                        if (bounds) {
-                            map.fitBounds(bounds);
-                        }
-                        isMapInitialized = true;
-                    }
+                    map.invalidateSize(); // Me-render ulang kanvas Leaflet setelah di-unhide
                 }, 300);
             }
         }
 
         // --- 2. Leaflet JS Map Initialization ---
+        // FIX: Inisialisasi peta diarahkan ke tengah Kabupaten Bogor
         const map = L.map('map-container', {
             zoomControl: false
         }).setView([-6.550, 106.830], 10);
@@ -596,26 +753,24 @@
 
         osm.addTo(map);
 
-        // Styling Poligon & Garis
-        const styleKecamatan = { color: '#0B4A7F', weight: 2.5, dashArray: '5, 5', fillOpacity: 0.03 };
-        const styleDesa = { color: '#10B981', weight: 1.5, dashArray: '3, 3', fillOpacity: 0.02 };
+        // Styling Poligon
+        const styleAdmin = { color: '#0B4A7F', weight: 2.5, dashArray: '5, 5', fillOpacity: 0.03 };
         const styleInd = { color: '#64748b', fillColor: '#64748b', fillOpacity: 0.4, weight: 1.5 };
         const stylePerum = { color: '#facc15', fillColor: '#facc15', fillOpacity: 0.35, weight: 1.5, radius: 1200 };
 
         // --- 3. INTEGRASI GEOJSON BATAS ADMINISTRASI QGIS2WEB ---
-        let layerAdminKec = L.layerGroup().addTo(map);
-        let layerAdminDesa = L.layerGroup().addTo(map);
+        let layerAdmin = L.layerGroup().addTo(map);
 
-        // A. Load Data Kecamatan
         if (typeof json_BATAS_ADMINISTRASI_KEC_LN_0 !== 'undefined') {
-            const adminKecGeoJson = L.geoJSON(json_BATAS_ADMINISTRASI_KEC_LN_0, {
-                style: styleKecamatan,
+            const adminGeoJson = L.geoJSON(json_BATAS_ADMINISTRASI_KEC_LN_0, {
+                style: styleAdmin,
                 onEachFeature: function (feature, layer) {
-                    let namaDaerah = feature.properties.NAMOBJ || feature.properties.WADMKC || "Kecamatan";
+                    let namaDaerah = feature.properties.NAMOBJ || feature.properties.WADMKC || feature.properties.WADMKD || "Area Administrasi";
 
-                    let popupContent = "<div class='text-center py-1'><b class='text-slate-800 text-sm font-bold'>Batas Kecamatan</b><br><span class='text-xs text-slate-500'>" + namaDaerah + "</span></div>";
+                    let popupContent = "<div class='text-center py-1'><b class='text-slate-800 text-sm font-bold'>Batas Administrasi</b><br><span class='text-xs text-slate-500'>" + namaDaerah + "</span></div>";
                     layer.bindPopup(popupContent);
 
+                    // FIX: Perbaikan Logic hover agar resetStyle berfungsi
                     layer.on({
                         mouseover: function (e) {
                             var l = e.target;
@@ -625,44 +780,18 @@
                             }
                         },
                         mouseout: function (e) {
-                            adminKecGeoJson.resetStyle(e.target);
+                            adminGeoJson.resetStyle(e.target);
                         }
                     });
                 }
             });
-            layerAdminKec.addLayer(adminKecGeoJson);
+
+            layerAdmin.addLayer(adminGeoJson);
+
+            // FIX: Hapus map.fitBounds(...) di sini untuk menghindari Crash "Bounds are not valid" pada Hidden Map
+            // Map tidak boleh difokuskan jika tab-nya (display) masih dalam status "none" saat halaman diload.
         } else {
-            console.warn("Peringatan: File 'BATAS_ADMINISTRASI_KEC_LN_0.js' tidak ditemukan. Pastikan file sudah di-upload ke GitHub.");
-        }
-
-        // B. Load Data Desa
-        // Sistem ini mengecek apakah variabel json_BATAS_ADMINISTRASI_DESA_0 tersedia di dalam script HTML.
-        if (typeof json_BATAS_ADMINISTRASI_DESA_0 !== 'undefined') {
-            const adminDesaGeoJson = L.geoJSON(json_BATAS_ADMINISTRASI_DESA_0, {
-                style: styleDesa,
-                onEachFeature: function (feature, layer) {
-                    let namaDaerah = feature.properties.NAMOBJ || feature.properties.WADMKD || "Desa/Kelurahan";
-
-                    let popupContent = "<div class='text-center py-1'><b class='text-slate-800 text-sm font-bold'>Batas Desa/Kelurahan</b><br><span class='text-xs text-slate-500'>" + namaDaerah + "</span></div>";
-                    layer.bindPopup(popupContent);
-
-                    layer.on({
-                        mouseover: function (e) {
-                            var l = e.target;
-                            l.setStyle({ weight: 3, color: '#EF4444' });
-                            if (!L.Browser.ie && !L.Browser.opera && !L.Browser.edge) {
-                                l.bringToFront();
-                            }
-                        },
-                        mouseout: function (e) {
-                            adminDesaGeoJson.resetStyle(e.target);
-                        }
-                    });
-                }
-            });
-            layerAdminDesa.addLayer(adminDesaGeoJson);
-        } else {
-            console.warn("Peringatan: File 'BATAS_ADMINISTRASI_DESA_0.js' belum dimasukkan atau variabel nama tidak sesuai.");
+            console.warn("File BATAS_ADMINISTRASI_KEC_LN_0.js tidak dimuat. Pastikan file berada di folder yang sama.");
         }
 
 
@@ -678,7 +807,9 @@
                 mouseover: function (e) {
                     var l = e.target;
                     l.setStyle({ weight: 3, fillOpacity: 0.7, color: '#F59E0B' });
-                    if (!L.Browser.ie && !L.Browser.opera && !L.Browser.edge) { l.bringToFront(); }
+                    if (!L.Browser.ie && !L.Browser.opera && !L.Browser.edge) {
+                        l.bringToFront();
+                    }
                 },
                 mouseout: function (e) {
                     var l = e.target;
@@ -704,16 +835,9 @@
             }
         });
 
-        // Kontrol Layer Checkbox Kecamatan
-        document.getElementById('cb-admin-kec').addEventListener('change', function (e) {
-            if (e.target.checked) map.addLayer(layerAdminKec);
-            else map.removeLayer(layerAdminKec);
-        });
-
-        // Kontrol Layer Checkbox Desa
-        document.getElementById('cb-admin-desa').addEventListener('change', function (e) {
-            if (e.target.checked) map.addLayer(layerAdminDesa);
-            else map.removeLayer(layerAdminDesa);
+        document.getElementById('cb-admin').addEventListener('change', function (e) {
+            if (e.target.checked) map.addLayer(layerAdmin);
+            else map.removeLayer(layerAdmin);
         });
 
         document.getElementById('cb-industri').addEventListener('change', function (e) {
