@@ -7,7 +7,6 @@
     <title>WebGIS - Dinas Pertanahan dan Tata Ruang Kabupaten Bogor</title>
 
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
-
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
         tailwind.config = {
@@ -20,16 +19,9 @@
                         primary: '#0B4A7F',    /* Biru Khas Web DPTR Bogor */
                         secondary: '#F59E0B',  /* Aksen Kuning/Emas DPTR */
                         slate: {
-                            50: '#f8fafc',
-                            100: '#f1f5f9',
-                            200: '#e2e8f0',
-                            300: '#cbd5e1',
-                            400: '#94a3b8',
-                            500: '#64748b',
-                            600: '#475569',
-                            700: '#334155',
-                            800: '#1e293b',
-                            900: '#0f172a',
+                            50: '#f8fafc', 100: '#f1f5f9', 200: '#e2e8f0', 300: '#cbd5e1',
+                            400: '#94a3b8', 500: '#64748b', 600: '#475569', 700: '#334155',
+                            800: '#1e293b', 900: '#0f172a',
                         }
                     }
                 }
@@ -56,23 +48,11 @@
             height: calc(100vh - 72px);
         }
 
-        /* Custom Scrollbar */
-        ::-webkit-scrollbar {
-            width: 6px;
-            height: 6px;
-        }
-        ::-webkit-scrollbar-track {
-            background: transparent;
-        }
-        ::-webkit-scrollbar-thumb {
-            background: #cbd5e1;
-            border-radius: 10px;
-        }
-        ::-webkit-scrollbar-thumb:hover {
-            background: #94a3b8;
-        }
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
+        ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
 
-        /* Custom Checkbox */
         input[type="checkbox"] {
             accent-color: #0B4A7F;
             cursor: pointer;
@@ -81,7 +61,6 @@
             border-radius: 4px;
         }
 
-        /* Leaflet Controls */
         .leaflet-bar {
             border: 1px solid rgba(226, 232, 240, 0.8) !important;
             box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06) !important;
@@ -94,45 +73,35 @@
             color: #475569 !important;
             border-bottom: 1px solid #f1f5f9 !important;
             transition: all 0.3s ease;
-            width: 38px !important;
-            height: 38px !important;
-            line-height: 38px !important;
+            width: 38px !important; height: 38px !important; line-height: 38px !important;
         }
-        .leaflet-bar a:hover {
-            background-color: #f8fafc !important;
-            color: #0B4A7F !important;
-        }
-        .leaflet-top.leaflet-right .leaflet-control {
-            margin-top: 250px;
-            margin-right: 24px;
-        }
+        .leaflet-bar a:hover { background-color: #f8fafc !important; color: #0B4A7F !important; }
+        .leaflet-top.leaflet-right .leaflet-control { margin-top: 250px; margin-right: 24px; }
         .leaflet-bottom.leaflet-left .leaflet-control {
-            margin-bottom: 24px;
-            margin-left: 24px;
+            margin-bottom: 24px; margin-left: 24px;
             border: 1px solid rgba(226, 232, 240, 0.8);
             background: rgba(255, 255, 255, 0.95);
             backdrop-filter: blur(8px);
-            padding: 4px 10px;
-            border-radius: 8px;
+            padding: 4px 10px; border-radius: 8px;
             box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
         }
 
-        /* Override Leaflet Popup untuk menyatu dengan Tailwind UI */
-        .leaflet-popup-content-wrapper {
+        /* CUSTOM LEAFLET POPUP TAILWIND */
+        .custom-tailwind-popup .leaflet-popup-content-wrapper {
             padding: 0;
             border-radius: 0.75rem;
             overflow: hidden;
-            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.15);
+            background: transparent;
         }
-        .leaflet-popup-content {
+        .custom-tailwind-popup .leaflet-popup-content {
             margin: 0;
-            width: auto !important;
+            width: 280px !important;
         }
-        .leaflet-popup-tip-container {
+        .custom-tailwind-popup .leaflet-popup-tip-container {
             margin-top: -1px;
         }
 
-        /* Glassmorphism Panel */
         .glass-panel {
             background: rgba(255, 255, 255, 0.85);
             backdrop-filter: blur(16px);
@@ -141,7 +110,6 @@
             box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05), 0 8px 10px -6px rgba(0, 0, 0, 0.01);
         }
 
-        /* Animations */
         .fade-in {
             animation: fadeIn 0.4s cubic-bezier(0.16, 1, 0.3, 1);
         }
@@ -219,7 +187,6 @@
     </aside>
 
     <main class="flex-1 flex flex-col h-screen relative bg-[#f4f7fb]">
-
         <header class="h-[72px] bg-white/80 backdrop-blur-md border-b border-slate-200 flex items-center justify-between px-8 z-[30] sticky top-0 shadow-[0_4px_20px_rgba(0,0,0,0.01)]">
             <h2 id="page-title" class="font-bold text-xl text-slate-800 tracking-tight">Beranda</h2>
             <div class="flex items-center space-x-4">
@@ -266,19 +233,21 @@
             </div>
 
             <div id="page-map" class="page-content hidden h-full w-full relative fade-in bg-slate-100">
-
                 <div class="absolute top-6 left-1/2 transform -translate-x-1/2 z-[400] glass-panel px-3 py-1.5 rounded-lg text-[10px] font-bold text-slate-600 flex items-center space-x-1.5 uppercase tracking-widest border-t-[3px] border-t-red-500">
                     <i class="fa-solid fa-location-arrow text-slate-400 transform -rotate-45"></i>
                     <span>Utara</span>
                 </div>
 
-                <div class="absolute top-6 right-6 z-[400] glass-panel p-1.5 rounded-2xl flex flex-col space-y-1.5">
+                <div class="absolute top-6 right-6 z-[400] glass-panel p-1.5 rounded-2xl flex flex-col space-y-1.5 shadow-md">
                     <button onclick="map.setView([-6.550, 106.830], 10)" class="w-10 h-10 rounded-xl flex items-center justify-center text-slate-600 hover:bg-white hover:text-primary hover:shadow-sm transition-all" title="Reset Tampilan">
                         <i class="fa-solid fa-house"></i>
                     </button>
                     <div class="w-8 h-[1px] bg-slate-200 mx-auto"></div>
                     <button class="w-10 h-10 rounded-xl flex items-center justify-center text-slate-600 hover:bg-white hover:text-primary hover:shadow-sm transition-all" title="Ukur Jarak">
                         <i class="fa-solid fa-ruler-combined"></i>
+                    </button>
+                    <button class="w-10 h-10 rounded-xl flex items-center justify-center text-slate-600 hover:bg-white hover:text-primary hover:shadow-sm transition-all" title="Identifikasi Objek">
+                        <i class="fa-solid fa-circle-info"></i>
                     </button>
                     <button class="w-10 h-10 rounded-xl flex items-center justify-center text-slate-600 hover:bg-white hover:text-primary hover:shadow-sm transition-all" title="Cetak Peta">
                         <i class="fa-solid fa-print"></i>
@@ -298,11 +267,11 @@
                             <h5 class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-3">Batas Administrasi</h5>
                             <div class="space-y-3">
                                 <label class="flex items-center space-x-3 cursor-pointer group">
-                                    <input type="checkbox" id="cb-admin-kec" class="w-4 h-4 text-primary border-slate-300 rounded focus:ring-primary focus:ring-offset-1 transition" checked>
+                                    <input type="checkbox" id="cb-kec" class="w-4 h-4 text-primary border-slate-300 rounded focus:ring-primary focus:ring-offset-1 transition" checked>
                                     <span class="text-slate-600 group-hover:text-primary font-medium transition-colors text-sm">Batas Kecamatan</span>
                                 </label>
                                 <label class="flex items-center space-x-3 cursor-pointer group">
-                                    <input type="checkbox" id="cb-admin-deskel" class="w-4 h-4 text-primary border-slate-300 rounded focus:ring-primary focus:ring-offset-1 transition" checked>
+                                    <input type="checkbox" id="cb-desa" class="w-4 h-4 text-primary border-slate-300 rounded focus:ring-primary focus:ring-offset-1 transition" checked>
                                     <span class="text-slate-600 group-hover:text-primary font-medium transition-colors text-sm">Batas Desa/Kelurahan</span>
                                 </label>
                             </div>
@@ -313,10 +282,7 @@
                             <div class="space-y-3">
                                 <label class="flex items-center space-x-3 cursor-pointer group">
                                     <input type="checkbox" id="cb-swp" class="w-4 h-4 text-primary border-slate-300 rounded focus:ring-primary focus:ring-offset-1 transition" checked>
-                                    <div class="flex items-center flex-1">
-                                        <i class="fa-solid fa-draw-polygon text-emerald-500 mr-2.5 text-xs"></i>
-                                        <span class="text-slate-600 group-hover:text-primary font-medium transition-colors text-sm">SWP Perencanaan</span>
-                                    </div>
+                                    <span class="text-slate-600 group-hover:text-primary font-medium transition-colors text-sm">SWP Perencanaan</span>
                                 </label>
                             </div>
                         </div>
@@ -331,37 +297,33 @@
                     </div>
                 </div>
 
-                <div class="absolute bottom-6 left-1/2 transform -translate-x-1/2 z-[400] glass-panel px-4 py-2 rounded-full text-xs font-semibold text-slate-600 flex items-center space-x-2">
+                <div class="absolute bottom-6 left-1/2 transform -translate-x-1/2 z-[400] glass-panel px-4 py-2 rounded-full text-xs font-semibold text-slate-600 flex items-center space-x-2 shadow-sm">
                     <i class="fa-solid fa-crosshairs text-primary"></i>
                     <span id="coord-display" class="tracking-widest">Lat: -6.47510 | Lng: 106.84010</span>
                 </div>
 
-                <div class="absolute bottom-6 right-6 z-[400] glass-panel p-4 rounded-2xl w-[220px]">
-                    <h4 class="font-bold text-slate-800 mb-3.5 flex items-center text-sm border-b border-slate-200/60 pb-2">
+                <div class="absolute bottom-6 right-6 z-[400] glass-panel p-4 rounded-2xl w-[220px] shadow-lg">
+                    <h4 class="font-bold text-slate-800 mb-3 flex items-center text-sm border-b border-slate-200/60 pb-2">
                         <i class="fa-solid fa-list-ul text-primary mr-2"></i> Legenda Peta
                     </h4>
-                    
-                    <div class="space-y-2 mb-3">
-                        <h5 class="text-[10px] font-bold text-slate-400 uppercase">SWP Perencanaan</h5>
-                        <div class="flex items-center text-slate-600 text-[11px] font-medium"><span class="w-3.5 h-3.5 bg-green-500 inline-block mr-3 rounded-sm opacity-60 border border-green-600"></span>WP Barat</div>
-                        <div class="flex items-center text-slate-600 text-[11px] font-medium"><span class="w-3.5 h-3.5 bg-yellow-500 inline-block mr-3 rounded-sm opacity-60 border border-yellow-600"></span>WP Tengah</div>
-                        <div class="flex items-center text-slate-600 text-[11px] font-medium"><span class="w-3.5 h-3.5 bg-blue-500 inline-block mr-3 rounded-sm opacity-60 border border-blue-600"></span>WP Timur</div>
-                    </div>
+                    <div class="space-y-2.5">
+                        <h6 class="text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-2 border-b border-slate-100 pb-1">SWP Perencanaan</h6>
+                        <div class="flex items-center text-slate-600 text-xs font-medium"><span class="w-3.5 h-3.5 bg-[#22c55e] inline-block mr-3 rounded-sm shadow-sm opacity-60 border border-[#22c55e]"></span>WP Barat</div>
+                        <div class="flex items-center text-slate-600 text-xs font-medium"><span class="w-3.5 h-3.5 bg-[#eab308] inline-block mr-3 rounded-sm shadow-sm opacity-60 border border-[#eab308]"></span>WP Tengah</div>
+                        <div class="flex items-center text-slate-600 text-xs font-medium"><span class="w-3.5 h-3.5 bg-[#3b82f6] inline-block mr-3 rounded-sm shadow-sm opacity-60 border border-[#3b82f6]"></span>WP Timur</div>
+                        <div class="flex items-center text-slate-600 text-xs font-medium"><span class="w-3.5 h-3.5 bg-[#0B4A7F] inline-block mr-3 rounded-sm shadow-sm opacity-60 border border-[#0B4A7F]"></span>Lainnya</div>
 
-                    <div class="space-y-2 pt-2 border-t border-slate-100">
-                        <h5 class="text-[10px] font-bold text-slate-400 uppercase">Batas Administrasi</h5>
-                        <div class="flex items-center text-slate-600 text-[11px] font-medium">
-                            <div class="w-4 h-0 border-b-2 border-dashed border-[#0B4A7F] mr-2"></div>
-                            Batas Kecamatan
+                        <h6 class="text-[10px] font-bold text-slate-500 uppercase tracking-wider mt-4 mb-2 border-b border-slate-100 pb-1">Batas Administrasi</h6>
+                        <div class="flex items-center text-slate-600 text-xs font-medium">
+                            <div class="w-5 border-b-[3px] border-dashed border-[#0B4A7F] mr-3"></div> Batas Kecamatan
                         </div>
-                        <div class="flex items-center text-slate-600 text-[11px] font-medium">
-                            <div class="w-4 h-0 border-b border-dotted border-[#64748b] mr-2"></div>
-                            Batas Desa/Kelurahan
+                        <div class="flex items-center text-slate-600 text-xs font-medium">
+                            <div class="w-5 border-b-[2px] border-dotted border-[#64748b] mr-3"></div> Batas Desa/Kel.
                         </div>
                     </div>
                 </div>
 
-                <div id="map-container" class="w-full h-full z-0"></div>
+                <div id="map-container" class="w-full h-full z-0 relative"></div>
             </div>
 
             <div id="page-dashboard" class="page-content hidden p-8 fade-in">
@@ -369,7 +331,7 @@
                     <div class="flex flex-col md:flex-row md:justify-between md:items-end mb-8 space-y-4 md:space-y-0">
                         <div>
                             <h3 class="text-2xl font-bold text-slate-800 tracking-tight">Dashboard Statistik</h3>
-                            <p class="text-slate-500 text-sm mt-1">Ringkasan peruntukan pola ruang Kabupaten Bogor</p>
+                            <p class="text-slate-500 text-sm mt-1">Ringkasan peruntukan pola ruang Kabupaten Bogor (Update: Juni 2026)</p>
                         </div>
                         <button class="px-5 py-2.5 bg-white border border-slate-200 text-slate-700 rounded-xl text-sm font-semibold hover:bg-slate-50 hover:text-primary hover:border-slate-300 transition-all shadow-sm flex items-center group">
                             <i class="fa-solid fa-download mr-2 text-slate-400 group-hover:text-primary transition-colors"></i>
@@ -416,25 +378,101 @@
                             <h4 class="text-3xl font-extrabold text-slate-800 tracking-tight">9.278 <span class="text-sm font-semibold text-slate-400 ml-1">Ha</span></h4>
                         </div>
                     </div>
+
+                    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                        <div class="lg:col-span-2 bg-white rounded-2xl shadow-sm border border-slate-100 p-8 hover:shadow-md transition-shadow">
+                            <h4 class="font-bold text-slate-800 mb-6 flex items-center">
+                                <i class="fa-solid fa-chart-bar text-primary mr-3"></i> Proporsi Tata Ruang (RTRW)
+                            </h4>
+                            <div class="space-y-6">
+                                <div>
+                                    <div class="flex justify-between text-sm mb-2"><span class="font-semibold text-slate-600">Kawasan Lindung</span><span class="text-slate-700 font-bold">35%</span></div>
+                                    <div class="w-full bg-slate-100 rounded-full h-3 overflow-hidden">
+                                        <div class="bg-emerald-500 h-3 rounded-full relative">
+                                            <div class="absolute inset-0 bg-white/20"></div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div>
+                                    <div class="flex justify-between text-sm mb-2"><span class="font-semibold text-slate-600">Kawasan Budidaya Pertanian</span><span class="text-slate-700 font-bold">40%</span></div>
+                                    <div class="w-full bg-slate-100 rounded-full h-3 overflow-hidden">
+                                        <div class="bg-yellow-400 h-3 rounded-full relative">
+                                            <div class="absolute inset-0 bg-white/20"></div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div>
+                                    <div class="flex justify-between text-sm mb-2"><span class="font-semibold text-slate-600">Kawasan Permukiman</span><span class="text-slate-700 font-bold">15%</span></div>
+                                    <div class="w-full bg-slate-100 rounded-full h-3 overflow-hidden">
+                                        <div class="bg-orange-400 h-3 rounded-full relative">
+                                            <div class="absolute inset-0 bg-white/20"></div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div>
+                                    <div class="flex justify-between text-sm mb-2"><span class="font-semibold text-slate-600">Kawasan Industri & Perdagangan</span><span class="text-slate-700 font-bold">10%</span></div>
+                                    <div class="w-full bg-slate-100 rounded-full h-3 overflow-hidden">
+                                        <div class="bg-red-500 h-3 rounded-full relative">
+                                            <div class="absolute inset-0 bg-white/20"></div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="bg-gradient-to-br from-primary to-blue-900 rounded-2xl shadow-md p-8 flex flex-col justify-center items-center text-center relative overflow-hidden group">
+                            <div class="absolute -right-10 -top-10 w-48 h-48 bg-white rounded-full opacity-5 blur-3xl group-hover:opacity-10 transition-opacity duration-500"></div>
+                            <div class="absolute -left-10 -bottom-10 w-32 h-32 bg-secondary rounded-full opacity-10 blur-2xl group-hover:opacity-20 transition-opacity duration-500"></div>
+                            <div class="w-32 h-32 rounded-full border-8 border-white/10 flex items-center justify-center mb-6 relative z-10 group-hover:scale-105 transition-transform duration-500">
+                                <div class="bg-white rounded-full w-24 h-24 flex flex-col items-center justify-center shadow-[inset_0_2px_10px_rgba(0,0,0,0.1)]">
+                                    <i class="fa-solid fa-server text-3xl text-primary mb-1"></i>
+                                    <span class="text-[10px] font-extrabold text-slate-400 uppercase tracking-widest mt-1">PostGIS</span>
+                                </div>
+                            </div>
+                            <h4 class="text-white font-bold text-xl mb-1.5 tracking-tight">Server Terkoneksi</h4>
+                            <p class="text-sm text-blue-100/80 font-medium">Sinkronisasi data SHP real-time</p>
+                        </div>
+                    </div>
                 </div>
             </div>
 
             <div id="page-regulasi" class="page-content hidden p-8 fade-in">
-                 <div class="max-w-6xl mx-auto">
+                <div class="max-w-6xl mx-auto">
                     <h2 class="text-2xl font-bold text-slate-800 mb-8 tracking-tight">Katalog Data & Regulasi Tata Ruang</h2>
                     <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
                         <div class="bg-white p-7 rounded-2xl shadow-sm border border-slate-100 hover:shadow-xl hover:-translate-y-1.5 transition-all duration-300 group flex flex-col relative overflow-hidden">
                             <div class="absolute top-0 left-0 w-full h-1.5 bg-red-500"></div>
-                            <div class="w-14 h-14 bg-red-50 text-red-500 rounded-xl flex items-center justify-center mb-5 group-hover:scale-110 transition-all duration-300 shadow-sm">
+                            <div class="w-14 h-14 bg-red-50 text-red-500 rounded-xl flex items-center justify-center mb-5 group-hover:scale-110 group-hover:bg-red-500 group-hover:text-white transition-all duration-300 shadow-sm">
                                 <i class="fa-solid fa-file-pdf text-2xl"></i>
                             </div>
-                            <h4 class="font-bold text-lg text-slate-800 mb-2">Perda RTRW Kab. Bogor</h4>
-                            <p class="text-sm text-slate-500 mb-6">Dokumen legal Rencana Tata Ruang Wilayah terbaru.</p>
-                            <span class="mt-auto inline-flex items-center text-primary text-sm font-bold w-fit cursor-pointer">
-                                Download PDF <i class="fa-solid fa-arrow-down ml-2"></i>
+                            <h4 class="font-bold text-lg text-slate-800 mb-2 group-hover:text-primary transition-colors">Perda RTRW Kab. Bogor</h4>
+                            <p class="text-sm text-slate-500 mb-6 leading-relaxed">Dokumen legal Rencana Tata Ruang Wilayah terbaru untuk panduan penataan daerah.</p>
+                            <a href="#" class="mt-auto inline-flex items-center text-primary text-sm font-bold hover:text-red-600 transition-colors w-fit">
+                                Download PDF <i class="fa-solid fa-arrow-down ml-2 text-xs bg-primary/10 p-1.5 rounded-full group-hover:bg-red-100"></i>
+                            </a>
+                        </div>
+                        <div class="bg-white p-7 rounded-2xl shadow-sm border border-slate-100 hover:shadow-xl hover:-translate-y-1.5 transition-all duration-300 group cursor-pointer relative overflow-hidden flex flex-col">
+                            <div class="absolute top-0 left-0 w-full h-1.5 bg-primary"></div>
+                            <div class="w-14 h-14 bg-blue-50 text-primary rounded-xl flex items-center justify-center mb-5 group-hover:scale-110 group-hover:bg-primary group-hover:text-white transition-all duration-300 shadow-sm">
+                                <i class="fa-solid fa-map text-2xl"></i>
+                            </div>
+                            <h4 class="font-bold text-lg text-slate-800 mb-2 group-hover:text-primary transition-colors">RDTR Kawasan Cibinong</h4>
+                            <p class="text-sm text-slate-500 mb-6 leading-relaxed">Rencana Detail Tata Ruang Wilayah yang mencakup regulasi dan zonasi tingkat BWP.</p>
+                            <span class="mt-auto inline-flex items-center text-primary text-sm font-bold group-hover:underline w-fit">
+                                Lihat Dokumen <i class="fa-solid fa-arrow-right ml-2 text-xs"></i>
                             </span>
                         </div>
+                        <div class="bg-white p-7 rounded-2xl shadow-sm border border-slate-100 hover:shadow-xl hover:-translate-y-1.5 transition-all duration-300 group cursor-pointer relative overflow-hidden flex flex-col">
+                            <div class="absolute top-0 left-0 w-full h-1.5 bg-emerald-500"></div>
+                            <div class="w-14 h-14 bg-emerald-50 text-emerald-600 rounded-xl flex items-center justify-center mb-5 group-hover:scale-110 group-hover:bg-emerald-500 group-hover:text-white transition-all duration-300 shadow-sm">
+                                <i class="fa-solid fa-database text-2xl"></i>
+                            </div>
+                            <h4 class="font-bold text-lg text-slate-800 mb-2 group-hover:text-primary transition-colors">Shapefile (SHP) Admin</h4>
+                            <p class="text-sm text-slate-500 mb-6 leading-relaxed">Geodatabase batas administrasi wilayah yang telah diverifikasi oleh BIG.</p>
+                            <span class="mt-auto inline-flex items-center text-primary text-sm font-bold group-hover:underline w-fit">
+                                Request Data <i class="fa-solid fa-arrow-right ml-2 text-xs"></i>
+                            </span>
                         </div>
+                    </div>
                 </div>
             </div>
 
@@ -450,15 +488,47 @@
                         </div>
                     </div>
                     <p class="text-slate-600 mb-10 leading-relaxed text-lg">
-                        Dinas Pertanahan dan Tata Ruang Kabupaten Bogor memiliki tugas pokok membantu Bupati dalam menyelenggarakan urusan pemerintahan di bidang pertanahan dan tata ruang yang menjadi kewenangan daerah.
+                        Dinas Pertanahan dan Tata Ruang Kabupaten Bogor memiliki tugas pokok membantu Bupati dalam menyelenggarakan urusan pemerintahan di bidang pertanahan dan tata ruang yang menjadi kewenangan daerah, guna mewujudkan penataan wilayah yang terpadu dan berkelanjutan.
                     </p>
+                    <h3 class="text-xl font-bold text-slate-800 mb-5">Struktur Organisasi</h3>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <div class="p-4 rounded-xl border border-slate-200/60 bg-slate-50 flex items-center text-sm hover:bg-white hover:border-primary/30 hover:shadow-md transition-all group">
+                            <div class="w-10 h-10 rounded-lg bg-white flex items-center justify-center border border-slate-200 mr-3 group-hover:border-primary/30 group-hover:text-primary transition-colors">
+                                <i class="fa-solid fa-sitemap text-slate-400 group-hover:text-primary"></i>
+                            </div>
+                            <span class="font-semibold text-slate-700 group-hover:text-primary">Bidang Pengadaan Tanah</span>
+                        </div>
+                        <div class="p-4 rounded-xl border border-slate-200/60 bg-slate-50 flex items-center text-sm hover:bg-white hover:border-primary/30 hover:shadow-md transition-all group">
+                            <div class="w-10 h-10 rounded-lg bg-white flex items-center justify-center border border-slate-200 mr-3 group-hover:border-primary/30 group-hover:text-primary transition-colors">
+                                <i class="fa-solid fa-map-location text-slate-400 group-hover:text-primary"></i>
+                            </div>
+                            <span class="font-semibold text-slate-700 group-hover:text-primary">Bidang Tata Ruang</span>
+                        </div>
+                        <div class="p-4 rounded-xl border border-slate-200/60 bg-slate-50 flex items-center text-sm hover:bg-white hover:border-primary/30 hover:shadow-md transition-all group">
+                            <div class="w-10 h-10 rounded-lg bg-white flex items-center justify-center border border-slate-200 mr-3 group-hover:border-primary/30 group-hover:text-primary transition-colors">
+                                <i class="fa-solid fa-layer-group text-slate-400 group-hover:text-primary"></i>
+                            </div>
+                            <span class="font-semibold text-slate-700 group-hover:text-primary">Bidang Pertanahan</span>
+                        </div>
+                        <div class="p-4 rounded-xl border border-slate-200/60 bg-slate-50 flex items-center text-sm hover:bg-white hover:border-primary/30 hover:shadow-md transition-all group">
+                            <div class="w-10 h-10 rounded-lg bg-white flex items-center justify-center border border-slate-200 mr-3 group-hover:border-primary/30 group-hover:text-primary transition-colors">
+                                <i class="fa-solid fa-shield-halved text-slate-400 group-hover:text-primary"></i>
+                            </div>
+                            <span class="font-semibold text-slate-700 group-hover:text-primary">Bidang Pengendalian Ruang</span>
+                        </div>
+                    </div>
                 </div>
             </div>
+
         </div>
     </main>
 
     <script>
-        // --- 1. Navigation Logic ---
+        // --- Variabel State Global ---
+        let isMapFitted = false; // Mencegah fitBounds berulang agar pengguna tidak terganggu saat navigasi
+        let globalDataBounds = null; // Menyimpan Bounds gabungan dari layer yang berhasil di-load
+
+        // --- 1. Tab Navigation Logic ---
         function showPage(pageId) {
             document.querySelectorAll('.page-content').forEach(el => {
                 el.classList.add('hidden');
@@ -490,19 +560,33 @@
                 currentBtn.className = "nav-btn active w-full flex items-center px-4 py-3 rounded-xl transition-all duration-300 font-semibold bg-gradient-to-r from-blue-50 to-white text-primary border-l-4 border-primary shadow-sm";
             }
 
+            // Fitur Render Ulang Map dan FitBounds Cerdas
             if (pageId === 'map') {
-                setTimeout(() => { map.invalidateSize(); }, 300);
+                setTimeout(() => { 
+                    map.invalidateSize(); 
+                    if (!isMapFitted && globalDataBounds && globalDataBounds.isValid()) {
+                        map.fitBounds(globalDataBounds, { padding: [30, 30] });
+                        isMapFitted = true;
+                    }
+                }, 300);
             }
         }
 
-        // --- 2. Leaflet JS Map Initialization ---
+        // --- 2. Inisialisasi Map Leaflet ---
         const map = L.map('map-container', {
             zoomControl: false
         }).setView([-6.550, 106.830], 10);
 
         L.control.zoom({ position: 'topright' }).addTo(map);
-
         L.control.scale({ metric: true, imperial: false, position: 'bottomleft' }).addTo(map);
+
+        // --- Pane Prioritas agar Line (Garis Administrasi) tidak tertutup Polygon (SWP) ---
+        map.createPane('pane_swp');
+        map.getPane('pane_swp').style.zIndex = 400; 
+        map.createPane('pane_desa');
+        map.getPane('pane_desa').style.zIndex = 410;
+        map.createPane('pane_kec');
+        map.getPane('pane_kec').style.zIndex = 420;
 
         const osm = L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
             maxZoom: 19,
@@ -513,103 +597,116 @@
             attribution: 'Tiles © Esri'
         });
 
-        // --- 3. LAYERS QGIS2WEB ---
+        // --- 3. PEMROSESAN LAYER DATA QGIS2WEB ---
 
-        // Styling Batas Kecamatan (Garis Putus-putus Tebal)
-        const styleKec = { color: '#0B4A7F', weight: 2.5, dashArray: '5, 5', fillOpacity: 0 };
-        // Styling Batas Desa (Garis Titik-titik Tipis)
+        // Styling Custom Garis Batas Administrasi
+        const styleKec = { color: '#0B4A7F', weight: 3, dashArray: '6, 6', fillOpacity: 0 };
         const styleDeskel = { color: '#64748b', weight: 1.5, dashArray: '2, 4', fillOpacity: 0 };
 
-        // Layer Batas Kecamatan
+        // [Layer 1] Batas Administrasi Kecamatan
         let layerKec = L.layerGroup().addTo(map);
         if (typeof json_BATAS_ADMINISTRASI_KEC_LN_1 !== 'undefined') {
             const kecGeoJson = L.geoJSON(json_BATAS_ADMINISTRASI_KEC_LN_1, {
+                pane: 'pane_kec',
                 style: styleKec,
-                interactive: false // Tidak interaktif agar klik turun ke SWP
+                onEachFeature: function(feature, layer) {
+                    let namaDaerah = feature.properties.NAMOBJ || feature.properties.WADMKC || "Kecamatan";
+                    layer.bindTooltip("<div class='font-bold text-xs text-slate-700'>" + namaDaerah + "</div>", {sticky: true, direction: "auto"});
+                }
             });
             layerKec.addLayer(kecGeoJson);
+            globalDataBounds = kecGeoJson.getBounds();
+        } else {
+            console.warn("Script Data BATAS_ADMINISTRASI_KEC_LN_1 belum dimuat.");
         }
 
-        // Layer Batas Desa/Kelurahan
+        // [Layer 2] Batas Administrasi Desa / Kelurahan
         let layerDeskel = L.layerGroup().addTo(map);
         if (typeof json_BATAS_ADMINISTRASI_DESKEL_LN_2 !== 'undefined') {
             const deskelGeoJson = L.geoJSON(json_BATAS_ADMINISTRASI_DESKEL_LN_2, {
+                pane: 'pane_desa',
                 style: styleDeskel,
-                interactive: false
+                onEachFeature: function(feature, layer) {
+                    let namaDesa = feature.properties.NAMOBJ || feature.properties.WADMKD || "Desa/Kel.";
+                    layer.bindTooltip("<div class='font-medium text-[10px] text-slate-500'>" + namaDesa + "</div>", {sticky: true, direction: "auto"});
+                }
             });
             layerDeskel.addLayer(deskelGeoJson);
+            if(globalDataBounds) globalDataBounds.extend(deskelGeoJson.getBounds());
+            else globalDataBounds = deskelGeoJson.getBounds();
+        } else {
+            console.warn("Script Data BATAS_ADMINISTRASI_DESKEL_LN_2 belum dimuat.");
         }
 
-        // --- Fungsi Penentuan Warna Berdasarkan Atribut SWP ---
+        // Fungsi Penentuan Warna Polygon SWP
         function getSWPColor(wpName) {
-            if (!wpName) return '#94a3b8'; // Default grey
+            if (!wpName) return '#94a3b8';
             let name = wpName.toLowerCase();
-            if (name.includes('barat')) return '#22c55e'; // Hijau
-            if (name.includes('tengah')) return '#eab308'; // Kuning
-            if (name.includes('timur')) return '#3b82f6'; // Biru
+            if (name.includes('barat')) return '#22c55e'; // Hijau untuk WP Barat
+            if (name.includes('tengah')) return '#eab308'; // Kuning untuk WP Tengah
+            if (name.includes('timur')) return '#3b82f6'; // Biru untuk WP Timur
             return '#0B4A7F'; 
         }
 
-        function styleSWPPolygon(feature) {
-            return {
-                fillColor: getSWPColor(feature.properties.WP),
-                weight: 1.5,
-                opacity: 1,
-                color: '#ffffff',
-                dashArray: '3',
-                fillOpacity: 0.55
-            };
-        }
-
-        // Layer SWP Perencanaan
+        // [Layer 3] SWP Perencanaan (Dengan Custom Popup Modern & Hover)
         let layerSWP = L.layerGroup().addTo(map);
         if (typeof json_SWP_PERENCANAAN_0 !== 'undefined') {
             const swpGeoJson = L.geoJSON(json_SWP_PERENCANAAN_0, {
-                style: styleSWPPolygon,
+                pane: 'pane_swp',
+                style: function(feature) {
+                    return {
+                        fillColor: getSWPColor(feature.properties.WP),
+                        weight: 1.5,
+                        opacity: 1,
+                        color: '#ffffff',
+                        dashArray: '3',
+                        fillOpacity: 0.6
+                    };
+                },
                 onEachFeature: function(feature, layer) {
                     let props = feature.properties;
                     let luasArea = props.LUAS_HA ? parseFloat(props.LUAS_HA).toLocaleString('id-ID', {minimumFractionDigits: 2}) : '-';
                     
-                    // Pembuatan Konten Popup menggunakan Tailwind UI style
+                    // Struktur HTML untuk Popup Tailwind Custom
                     let popupContent = `
-                        <div class="min-w-[240px]">
-                            <div class="bg-primary text-white px-4 py-2 flex items-center space-x-2">
-                                <i class="fa-solid fa-layer-group text-secondary"></i>
-                                <h4 class="font-bold text-sm tracking-wide">Informasi SWP</h4>
+                        <div class="w-full">
+                            <div class="bg-primary text-white px-5 py-3 flex items-center space-x-2">
+                                <i class="fa-solid fa-draw-polygon text-secondary text-lg"></i>
+                                <h4 class="font-bold text-sm tracking-wide">Informasi Atribut SWP</h4>
                             </div>
-                            <div class="p-4 bg-white">
+                            <div class="px-5 py-4 bg-white">
                                 <table class="w-full text-xs text-slate-700">
                                     <tr class="border-b border-slate-100">
-                                        <td class="py-2 text-slate-500 font-medium">Wilayah</td>
-                                        <td class="py-2 font-bold text-right text-slate-800">${props.WP || '-'}</td>
+                                        <td class="py-2.5 text-slate-500 font-medium w-[40%]"><i class="fa-solid fa-map-pin mr-1.5 text-slate-400"></i> Wilayah</td>
+                                        <td class="py-2.5 font-extrabold text-right text-slate-800">${props.WP || '-'}</td>
                                     </tr>
                                     <tr class="border-b border-slate-100">
-                                        <td class="py-2 text-slate-500 font-medium">Sub-Wilayah (SWP)</td>
-                                        <td class="py-2 font-bold text-right text-slate-800">${props.SWP || '-'}</td>
+                                        <td class="py-2.5 text-slate-500 font-medium"><i class="fa-solid fa-code-branch mr-1.5 text-slate-400"></i> Sub-Wilayah</td>
+                                        <td class="py-2.5 font-bold text-right text-slate-800">${props.SWP || '-'}</td>
                                     </tr>
                                     <tr class="border-b border-slate-100">
-                                        <td class="py-2 text-slate-500 font-medium">Kecamatan</td>
-                                        <td class="py-2 font-bold text-right text-slate-800">${props.WADMKC || '-'}</td>
+                                        <td class="py-2.5 text-slate-500 font-medium"><i class="fa-solid fa-city mr-1.5 text-slate-400"></i> Kecamatan</td>
+                                        <td class="py-2.5 font-bold text-right text-slate-800">${props.WADMKC || '-'}</td>
                                     </tr>
                                     <tr>
-                                        <td class="py-2 text-slate-500 font-medium">Luas (Ha)</td>
-                                        <td class="py-2 font-bold text-right text-primary">${luasArea}</td>
+                                        <td class="py-2.5 text-slate-500 font-medium"><i class="fa-solid fa-chart-area mr-1.5 text-slate-400"></i> Luas (Ha)</td>
+                                        <td class="py-2.5 font-bold text-right text-primary text-sm">${luasArea}</td>
                                     </tr>
                                 </table>
                             </div>
                         </div>
                     `;
                     
-                    layer.bindPopup(popupContent);
+                    // Inject class custom agar padding default di-reset CSS custom-tailwind-popup
+                    layer.bindPopup(popupContent, {
+                        className: 'custom-tailwind-popup'
+                    });
 
-                    // Efek Hover pada Polygon
+                    // Interaktivitas Efek Hover pada Polygon SWP
                     layer.on({
                         mouseover: function (e) {
                             var l = e.target;
                             l.setStyle({ weight: 3, fillOpacity: 0.8, color: '#F59E0B' });
-                            if (!L.Browser.ie && !L.Browser.opera && !L.Browser.edge) {
-                                l.bringToFront();
-                            }
                         },
                         mouseout: function (e) {
                             swpGeoJson.resetStyle(e.target);
@@ -618,13 +715,14 @@
                 }
             });
             layerSWP.addLayer(swpGeoJson);
+            if(globalDataBounds) globalDataBounds.extend(swpGeoJson.getBounds());
+            else globalDataBounds = swpGeoJson.getBounds();
         } else {
-            console.warn("File SWP_PERENCANAAN_0.js tidak dimuat.");
+            console.warn("Script Data SWP_PERENCANAAN_0 belum dimuat.");
         }
 
-        // --- 4. Sidebar Controls Events ---
+        // --- 4. Interaktivitas Tools Panel di Peta ---
         
-        // Ganti Basemap
         document.getElementById('basemap-select').addEventListener('change', function (e) {
             if (e.target.value === 'osm') {
                 osm.addTo(map);
@@ -635,25 +733,21 @@
             }
         });
 
-        // Toggle Layer Batas Kecamatan
-        document.getElementById('cb-admin-kec').addEventListener('change', function (e) {
+        document.getElementById('cb-kec').addEventListener('change', function (e) {
             if (e.target.checked) map.addLayer(layerKec);
             else map.removeLayer(layerKec);
         });
 
-        // Toggle Layer Batas Desa/Kelurahan
-        document.getElementById('cb-admin-deskel').addEventListener('change', function (e) {
+        document.getElementById('cb-desa').addEventListener('change', function (e) {
             if (e.target.checked) map.addLayer(layerDeskel);
             else map.removeLayer(layerDeskel);
         });
 
-        // Toggle Layer SWP Perencanaan
         document.getElementById('cb-swp').addEventListener('change', function (e) {
             if (e.target.checked) map.addLayer(layerSWP);
             else map.removeLayer(layerSWP);
         });
 
-        // Tampilan Koordinat Mouse
         map.on('mousemove', function (e) {
             document.getElementById('coord-display').innerText = `Lat: ${e.latlng.lat.toFixed(5)} | Lng: ${e.latlng.lng.toFixed(5)}`;
         });
