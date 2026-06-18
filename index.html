@@ -790,13 +790,18 @@
                 <div id="page-profile" class="page-content hidden p-8 fade-in">
                     <div class="max-w-4xl mx-auto bg-white rounded-2xl shadow-sm border border-slate-100 p-8 md:p-12">
                         <div class="flex items-center mb-8 border-b border-slate-100 pb-6">
+
                             <div
-                                class="w-16 h-16 bg-gradient-to-br from-blue-50 to-blue-100 rounded-2xl flex items-center justify-center text-primary mr-5 shadow-sm border border-blue-100">
-                                <i class="fa-solid fa-building-flag text-3xl"></i>
+                                class="w-16 h-16 bg-gradient-to-br from-blue-50 to-blue-100 rounded-2xl flex items-center justify-center text-primary mr-5 shadow-sm border border-blue-100 overflow-hidden p-2">
+                                <img src="https://dptr.bogorkab.go.id/uploads/settings/17682882065023.png"
+                                    alt="Logo DPTR" class="w-full h-full object-contain"
+                                    onerror="this.src='https://ui-avatars.com/api/?name=DPTR&background=0B4A7F&color=fff'">
                             </div>
+
                             <div>
-                                <h2 class="text-3xl font-extrabold text-slate-800 tracking-tight">Profil Instansi</h2>
-                                <p class="text-primary font-semibold mt-1">Dinas Pertanahan dan Tata Ruang</p>
+                                <h2 class="text-3xl font-extrabold text-slate-800 tracking-tight">Dinas Pertanahan dan
+                                    Tata Ruang (DPTR)</h2>
+                                <p class="text-primary font-semibold mt-1">Kabupaten Bogor</p>
                             </div>
                         </div>
                         <p class="text-slate-600 mb-10 leading-relaxed text-lg">
@@ -812,9 +817,8 @@
                                     class="w-10 h-10 rounded-lg bg-white flex items-center justify-center border border-slate-200 mr-3 group-hover:border-primary/30 group-hover:text-primary transition-colors">
                                     <i class="fa-solid fa-sitemap text-slate-400 group-hover:text-primary"></i>
                                 </div>
-                                <span class="font-semibold text-slate-700 group-hover:text-primary">Bidang Pemanfaatan
-                                    Bangunan
-                                    Tanah</span>
+                                <span class="font-semibold text-slate-700 group-hover:text-primary">Bidang Perencanaan
+                                    Ruang dan Bangunan</span>
                             </div>
                             <div
                                 class="p-4 rounded-xl border border-slate-200/60 bg-slate-50 flex items-center text-sm hover:bg-white hover:border-primary/30 hover:shadow-md transition-all group">
@@ -822,7 +826,7 @@
                                     class="w-10 h-10 rounded-lg bg-white flex items-center justify-center border border-slate-200 mr-3 group-hover:border-primary/30 group-hover:text-primary transition-colors">
                                     <i class="fa-solid fa-map-location text-slate-400 group-hover:text-primary"></i>
                                 </div><span class="font-semibold text-slate-700 group-hover:text-primary">Bidang
-                                    Perencanaan Ruang dan Bangunan</span>
+                                    Pemanfaatan Bangunan</span>
                             </div>
                             <div
                                 class="p-4 rounded-xl border border-slate-200/60 bg-slate-50 flex items-center text-sm hover:bg-white hover:border-primary/30 hover:shadow-md transition-all group">
@@ -838,7 +842,7 @@
                                     class="w-10 h-10 rounded-lg bg-white flex items-center justify-center border border-slate-200 mr-3 group-hover:border-primary/30 group-hover:text-primary transition-colors">
                                     <i class="fa-solid fa-shield-halved text-slate-400 group-hover:text-primary"></i>
                                 </div><span class="font-semibold text-slate-700 group-hover:text-primary">Bidang
-                                    Pemanfaatan Bangunan</span>
+                                    Pemanfaatan dan Pengendalian Ruang</span>
                             </div>
                         </div>
                     </div>
@@ -1094,7 +1098,6 @@
         function clearToolSelection() {
             document.querySelectorAll('.tool-btn').forEach(btn => {
                 btn.classList.remove('bg-blue-50', 'bg-emerald-50', 'bg-red-50', 'text-primary', 'text-emerald-600', 'text-red-500', 'text-secondary', 'shadow-inner');
-                // Mengembalikan style netral
                 if (!btn.classList.contains('text-slate-600')) btn.classList.add('text-slate-600');
             });
             if (map && map.pm) {
@@ -1106,14 +1109,13 @@
         }
 
         function triggerTool(shape) {
-            // Jika tool yang sama diklik lagi, maka matikan tool tersebut (Toggle)
             if (activeTool === shape) {
                 clearToolSelection();
                 return;
             }
 
             clearToolSelection();
-            activeTool = shape; // Set tool yang baru aktif
+            activeTool = shape;
 
             const btn = document.getElementById('tool-' + shape);
             if (btn) {
@@ -1174,7 +1176,6 @@
                 btn.classList.remove('text-slate-600');
                 btn.classList.add('bg-emerald-50', 'text-emerald-600', 'shadow-inner');
             }
-            // Mengaktifkan fitur gambar garis (Line) yang dikonfigurasi khusus untuk melihat jarak
             map.pm.enableDraw('Line', {
                 snappable: true,
                 finishOn: 'dblclick',
@@ -1187,7 +1188,6 @@
 
             const drawnItems = L.featureGroup();
             map.eachLayer((layer) => {
-                // Seleksi layer yang digambar/dibuat menggunakan Leaflet-Geoman (Bukan GeoJSON Administrasi)
                 if (layer.pm && layer.pm._shape && !layer.options.pmIgnore) {
                     drawnItems.addLayer(layer);
                 }
@@ -1241,7 +1241,7 @@
                 measurements: { measurement: true, displayFormat: 'metric' }
             });
 
-            // Event saat hasil gambar selesai untuk memberi notifikasi Jarak/Popup
+            // Event saat hasil gambar selesai
             map.on('pm:create', function (e) {
                 const layer = e.layer;
                 const shape = e.shape;
