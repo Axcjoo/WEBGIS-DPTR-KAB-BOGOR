@@ -33,9 +33,9 @@
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 
-    <script src="BATAS_ADMINISTRASI_KEC_LN_1.js"></script>
-    <script src="BATAS_ADMINISTRASI_DESKEL_LN_2.js"></script>
-    <script src="SWP_PERENCANAAN_0.js"></script>
+    <script src="./BATAS_ADMINISTRASI_KEC_LN_1.js"></script>
+    <script src="./BATAS_ADMINISTRASI_DESKEL_LN_2.js"></script>
+    <script src="./SWP_PERENCANAAN_0.js"></script>
 
     <style>
         body {
@@ -239,7 +239,7 @@
                 </div>
 
                 <div class="absolute top-6 right-6 z-[400] glass-panel p-1.5 rounded-2xl flex flex-col space-y-1.5 shadow-md">
-                    <button onclick="map.setView([-6.550, 106.830], 10)" class="w-10 h-10 rounded-xl flex items-center justify-center text-slate-600 hover:bg-white hover:text-primary hover:shadow-sm transition-all" title="Reset Tampilan">
+                    <button onclick="if(map){map.setView([-6.550, 106.830], 10);}" class="w-10 h-10 rounded-xl flex items-center justify-center text-slate-600 hover:bg-white hover:text-primary hover:shadow-sm transition-all" title="Reset Tampilan">
                         <i class="fa-solid fa-house"></i>
                     </button>
                     <div class="w-8 h-[1px] bg-slate-200 mx-auto"></div>
@@ -323,7 +323,7 @@
                     </div>
                 </div>
 
-                <div id="map-container" class="w-full h-full z-0 relative"></div>
+                <div id="map-container" class="w-full h-full z-0 relative bg-slate-100"></div>
             </div>
 
             <div id="page-dashboard" class="page-content hidden p-8 fade-in">
@@ -524,9 +524,11 @@
     </main>
 
     <script>
-        // --- Variabel State Global ---
-        let isMapFitted = false; // Mencegah fitBounds berulang agar pengguna tidak terganggu saat navigasi
-        let globalDataBounds = null; // Menyimpan Bounds gabungan dari layer yang berhasil di-load
+        // --- Variabel Global ---
+        let map;
+        let globalDataBounds = L.latLngBounds();
+        let hasData = false;
+        let isMapFitted = false; 
 
         // --- 1. Tab Navigation Logic ---
         function showPage(pageId) {
@@ -538,7 +540,7 @@
             const selectedPage = document.getElementById('page-' + pageId);
             if (selectedPage) {
                 selectedPage.classList.remove('hidden');
-                void selectedPage.offsetWidth;
+                void selectedPage.offsetWidth; // Trigger reflow untuk animasi
                 selectedPage.classList.add('fade-in');
             }
 
@@ -560,197 +562,192 @@
                 currentBtn.className = "nav-btn active w-full flex items-center px-4 py-3 rounded-xl transition-all duration-300 font-semibold bg-gradient-to-r from-blue-50 to-white text-primary border-l-4 border-primary shadow-sm";
             }
 
-            // Fitur Render Ulang Map dan FitBounds Cerdas
-            if (pageId === 'map') {
+            // Fitur Resize & Zoom Otomatis Peta Saat Dibuka
+            if (pageId === 'map' && map) {
                 setTimeout(() => { 
                     map.invalidateSize(); 
-                    if (!isMapFitted && globalDataBounds && globalDataBounds.isValid()) {
+                    if (!isMapFitted && hasData && globalDataBounds.isValid()) {
                         map.fitBounds(globalDataBounds, { padding: [30, 30] });
-                        isMapFitted = true;
+                        isMapFitted = true; // Hanya di-fit sekali agar user tidak pusing
                     }
                 }, 300);
             }
         }
 
-        // --- 2. Inisialisasi Map Leaflet ---
-        const map = L.map('map-container', {
-            zoomControl: false
-        }).setView([-6.550, 106.830], 10);
+        // --- 2. Inisialisasi Peta (Didalam window.onload untuk keamanan GitHub Pages) ---
+        window.addEventListener('load', function() {
+            
+            // Inisiasi Map Leaflet
+            map = L.map('map-container', {
+                zoomControl: false
+            }).setView([-6.550, 106.830], 10);
 
-        L.control.zoom({ position: 'topright' }).addTo(map);
-        L.control.scale({ metric: true, imperial: false, position: 'bottomleft' }).addTo(map);
+            L.control.zoom({ position: 'topright' }).addTo(map);
+            L.control.scale({ metric: true, imperial: false, position: 'bottomleft' }).addTo(map);
 
-        // --- Pane Prioritas agar Line (Garis Administrasi) tidak tertutup Polygon (SWP) ---
-        map.createPane('pane_swp');
-        map.getPane('pane_swp').style.zIndex = 400; 
-        map.createPane('pane_desa');
-        map.getPane('pane_desa').style.zIndex = 410;
-        map.createPane('pane_kec');
-        map.getPane('pane_kec').style.zIndex = 420;
+            // Membuat z-index pane agar polygon tidak menutupi garis
+            map.createPane('pane_swp');
+            map.getPane('pane_swp').style.zIndex = 400; 
+            map.createPane('pane_desa');
+            map.getPane('pane_desa').style.zIndex = 410;
+            map.createPane('pane_kec');
+            map.getPane('pane_kec').style.zIndex = 420;
 
-        const osm = L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
-            maxZoom: 19,
-            attribution: '© OpenStreetMap contributors © CARTO'
-        }).addTo(map);
+            const osm = L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
+                maxZoom: 19,
+                attribution: '© OpenStreetMap contributors © CARTO'
+            }).addTo(map);
 
-        const satellite = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
-            attribution: 'Tiles © Esri'
-        });
-
-        // --- 3. PEMROSESAN LAYER DATA QGIS2WEB ---
-
-        // Styling Custom Garis Batas Administrasi
-        const styleKec = { color: '#0B4A7F', weight: 3, dashArray: '6, 6', fillOpacity: 0 };
-        const styleDeskel = { color: '#64748b', weight: 1.5, dashArray: '2, 4', fillOpacity: 0 };
-
-        // [Layer 1] Batas Administrasi Kecamatan
-        let layerKec = L.layerGroup().addTo(map);
-        if (typeof json_BATAS_ADMINISTRASI_KEC_LN_1 !== 'undefined') {
-            const kecGeoJson = L.geoJSON(json_BATAS_ADMINISTRASI_KEC_LN_1, {
-                pane: 'pane_kec',
-                style: styleKec,
-                onEachFeature: function(feature, layer) {
-                    let namaDaerah = feature.properties.NAMOBJ || feature.properties.WADMKC || "Kecamatan";
-                    layer.bindTooltip("<div class='font-bold text-xs text-slate-700'>" + namaDaerah + "</div>", {sticky: true, direction: "auto"});
-                }
+            const satellite = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
+                attribution: 'Tiles © Esri'
             });
-            layerKec.addLayer(kecGeoJson);
-            globalDataBounds = kecGeoJson.getBounds();
-        } else {
-            console.warn("Script Data BATAS_ADMINISTRASI_KEC_LN_1 belum dimuat.");
-        }
 
-        // [Layer 2] Batas Administrasi Desa / Kelurahan
-        let layerDeskel = L.layerGroup().addTo(map);
-        if (typeof json_BATAS_ADMINISTRASI_DESKEL_LN_2 !== 'undefined') {
-            const deskelGeoJson = L.geoJSON(json_BATAS_ADMINISTRASI_DESKEL_LN_2, {
-                pane: 'pane_desa',
-                style: styleDeskel,
-                onEachFeature: function(feature, layer) {
-                    let namaDesa = feature.properties.NAMOBJ || feature.properties.WADMKD || "Desa/Kel.";
-                    layer.bindTooltip("<div class='font-medium text-[10px] text-slate-500'>" + namaDesa + "</div>", {sticky: true, direction: "auto"});
-                }
-            });
-            layerDeskel.addLayer(deskelGeoJson);
-            if(globalDataBounds) globalDataBounds.extend(deskelGeoJson.getBounds());
-            else globalDataBounds = deskelGeoJson.getBounds();
-        } else {
-            console.warn("Script Data BATAS_ADMINISTRASI_DESKEL_LN_2 belum dimuat.");
-        }
 
-        // Fungsi Penentuan Warna Polygon SWP
-        function getSWPColor(wpName) {
-            if (!wpName) return '#94a3b8';
-            let name = wpName.toLowerCase();
-            if (name.includes('barat')) return '#22c55e'; // Hijau untuk WP Barat
-            if (name.includes('tengah')) return '#eab308'; // Kuning untuk WP Tengah
-            if (name.includes('timur')) return '#3b82f6'; // Biru untuk WP Timur
-            return '#0B4A7F'; 
-        }
+            // --- 3. PEMROSESAN LAYER DATA QGIS2WEB ---
 
-        // [Layer 3] SWP Perencanaan (Dengan Custom Popup Modern & Hover)
-        let layerSWP = L.layerGroup().addTo(map);
-        if (typeof json_SWP_PERENCANAAN_0 !== 'undefined') {
-            const swpGeoJson = L.geoJSON(json_SWP_PERENCANAAN_0, {
-                pane: 'pane_swp',
-                style: function(feature) {
-                    return {
-                        fillColor: getSWPColor(feature.properties.WP),
-                        weight: 1.5,
-                        opacity: 1,
-                        color: '#ffffff',
-                        dashArray: '3',
-                        fillOpacity: 0.6
-                    };
-                },
-                onEachFeature: function(feature, layer) {
-                    let props = feature.properties;
-                    let luasArea = props.LUAS_HA ? parseFloat(props.LUAS_HA).toLocaleString('id-ID', {minimumFractionDigits: 2}) : '-';
-                    
-                    // Struktur HTML untuk Popup Tailwind Custom
-                    let popupContent = `
-                        <div class="w-full">
-                            <div class="bg-primary text-white px-5 py-3 flex items-center space-x-2">
-                                <i class="fa-solid fa-draw-polygon text-secondary text-lg"></i>
-                                <h4 class="font-bold text-sm tracking-wide">Informasi Atribut SWP</h4>
-                            </div>
-                            <div class="px-5 py-4 bg-white">
-                                <table class="w-full text-xs text-slate-700">
-                                    <tr class="border-b border-slate-100">
-                                        <td class="py-2.5 text-slate-500 font-medium w-[40%]"><i class="fa-solid fa-map-pin mr-1.5 text-slate-400"></i> Wilayah</td>
-                                        <td class="py-2.5 font-extrabold text-right text-slate-800">${props.WP || '-'}</td>
-                                    </tr>
-                                    <tr class="border-b border-slate-100">
-                                        <td class="py-2.5 text-slate-500 font-medium"><i class="fa-solid fa-code-branch mr-1.5 text-slate-400"></i> Sub-Wilayah</td>
-                                        <td class="py-2.5 font-bold text-right text-slate-800">${props.SWP || '-'}</td>
-                                    </tr>
-                                    <tr class="border-b border-slate-100">
-                                        <td class="py-2.5 text-slate-500 font-medium"><i class="fa-solid fa-city mr-1.5 text-slate-400"></i> Kecamatan</td>
-                                        <td class="py-2.5 font-bold text-right text-slate-800">${props.WADMKC || '-'}</td>
-                                    </tr>
-                                    <tr>
-                                        <td class="py-2.5 text-slate-500 font-medium"><i class="fa-solid fa-chart-area mr-1.5 text-slate-400"></i> Luas (Ha)</td>
-                                        <td class="py-2.5 font-bold text-right text-primary text-sm">${luasArea}</td>
-                                    </tr>
-                                </table>
-                            </div>
-                        </div>
-                    `;
-                    
-                    // Inject class custom agar padding default di-reset CSS custom-tailwind-popup
-                    layer.bindPopup(popupContent, {
-                        className: 'custom-tailwind-popup'
-                    });
+            const styleKec = { color: '#0B4A7F', weight: 3, dashArray: '6, 6', fillOpacity: 0 };
+            const styleDeskel = { color: '#64748b', weight: 1.5, dashArray: '2, 4', fillOpacity: 0 };
 
-                    // Interaktivitas Efek Hover pada Polygon SWP
-                    layer.on({
-                        mouseover: function (e) {
-                            var l = e.target;
-                            l.setStyle({ weight: 3, fillOpacity: 0.8, color: '#F59E0B' });
-                        },
-                        mouseout: function (e) {
-                            swpGeoJson.resetStyle(e.target);
-                        }
-                    });
-                }
-            });
-            layerSWP.addLayer(swpGeoJson);
-            if(globalDataBounds) globalDataBounds.extend(swpGeoJson.getBounds());
-            else globalDataBounds = swpGeoJson.getBounds();
-        } else {
-            console.warn("Script Data SWP_PERENCANAAN_0 belum dimuat.");
-        }
-
-        // --- 4. Interaktivitas Tools Panel di Peta ---
-        
-        document.getElementById('basemap-select').addEventListener('change', function (e) {
-            if (e.target.value === 'osm') {
-                osm.addTo(map);
-                map.removeLayer(satellite);
-            } else {
-                satellite.addTo(map);
-                map.removeLayer(osm);
+            // [Layer 1] Batas Administrasi Kecamatan
+            let layerKec = L.layerGroup().addTo(map);
+            if (typeof json_BATAS_ADMINISTRASI_KEC_LN_1 !== 'undefined') {
+                const kecGeoJson = L.geoJSON(json_BATAS_ADMINISTRASI_KEC_LN_1, {
+                    pane: 'pane_kec',
+                    style: styleKec,
+                    interactive: false // Agar popup SWP di bawahnya tetap bisa diklik
+                });
+                layerKec.addLayer(kecGeoJson);
+                globalDataBounds.extend(kecGeoJson.getBounds());
+                hasData = true;
             }
-        });
 
-        document.getElementById('cb-kec').addEventListener('change', function (e) {
-            if (e.target.checked) map.addLayer(layerKec);
-            else map.removeLayer(layerKec);
-        });
+            // [Layer 2] Batas Administrasi Desa / Kelurahan
+            let layerDeskel = L.layerGroup().addTo(map);
+            if (typeof json_BATAS_ADMINISTRASI_DESKEL_LN_2 !== 'undefined') {
+                const deskelGeoJson = L.geoJSON(json_BATAS_ADMINISTRASI_DESKEL_LN_2, {
+                    pane: 'pane_desa',
+                    style: styleDeskel,
+                    interactive: false
+                });
+                layerDeskel.addLayer(deskelGeoJson);
+                globalDataBounds.extend(deskelGeoJson.getBounds());
+                hasData = true;
+            }
 
-        document.getElementById('cb-desa').addEventListener('change', function (e) {
-            if (e.target.checked) map.addLayer(layerDeskel);
-            else map.removeLayer(layerDeskel);
-        });
+            // Fungsi Penentuan Warna Polygon SWP
+            function getSWPColor(wpName) {
+                if (!wpName) return '#94a3b8';
+                let name = wpName.toLowerCase();
+                if (name.includes('barat')) return '#22c55e'; // Hijau (WP Barat)
+                if (name.includes('tengah')) return '#eab308'; // Kuning (WP Tengah)
+                if (name.includes('timur')) return '#3b82f6'; // Biru (WP Timur)
+                return '#0B4A7F'; 
+            }
 
-        document.getElementById('cb-swp').addEventListener('change', function (e) {
-            if (e.target.checked) map.addLayer(layerSWP);
-            else map.removeLayer(layerSWP);
-        });
+            // [Layer 3] SWP Perencanaan (Dengan Custom Popup Modern & Hover)
+            let layerSWP = L.layerGroup().addTo(map);
+            if (typeof json_SWP_PERENCANAAN_0 !== 'undefined') {
+                const swpGeoJson = L.geoJSON(json_SWP_PERENCANAAN_0, {
+                    pane: 'pane_swp',
+                    style: function(feature) {
+                        return {
+                            fillColor: getSWPColor(feature.properties.WP),
+                            weight: 1.5,
+                            opacity: 1,
+                            color: '#ffffff',
+                            dashArray: '3',
+                            fillOpacity: 0.6
+                        };
+                    },
+                    onEachFeature: function(feature, layer) {
+                        let props = feature.properties;
+                        let luasArea = props.LUAS_HA ? parseFloat(props.LUAS_HA).toLocaleString('id-ID', {minimumFractionDigits: 2}) : '-';
+                        
+                        // Struktur HTML Popup (Terintegrasi CSS Tailwind)
+                        let popupContent = `
+                            <div class="w-full">
+                                <div class="bg-primary text-white px-5 py-3 flex items-center space-x-2">
+                                    <i class="fa-solid fa-draw-polygon text-secondary text-lg"></i>
+                                    <h4 class="font-bold text-sm tracking-wide">Informasi Atribut SWP</h4>
+                                </div>
+                                <div class="px-5 py-4 bg-white">
+                                    <table class="w-full text-xs text-slate-700">
+                                        <tr class="border-b border-slate-100">
+                                            <td class="py-2.5 text-slate-500 font-medium w-[40%]"><i class="fa-solid fa-map-pin mr-1.5 text-slate-400"></i> Wilayah</td>
+                                            <td class="py-2.5 font-extrabold text-right text-slate-800">${props.WP || '-'}</td>
+                                        </tr>
+                                        <tr class="border-b border-slate-100">
+                                            <td class="py-2.5 text-slate-500 font-medium"><i class="fa-solid fa-code-branch mr-1.5 text-slate-400"></i> Sub-Wilayah</td>
+                                            <td class="py-2.5 font-bold text-right text-slate-800">${props.SWP || '-'}</td>
+                                        </tr>
+                                        <tr class="border-b border-slate-100">
+                                            <td class="py-2.5 text-slate-500 font-medium"><i class="fa-solid fa-city mr-1.5 text-slate-400"></i> Kecamatan</td>
+                                            <td class="py-2.5 font-bold text-right text-slate-800">${props.WADMKC || '-'}</td>
+                                        </tr>
+                                        <tr>
+                                            <td class="py-2.5 text-slate-500 font-medium"><i class="fa-solid fa-chart-area mr-1.5 text-slate-400"></i> Luas (Ha)</td>
+                                            <td class="py-2.5 font-bold text-right text-primary text-sm">${luasArea}</td>
+                                        </tr>
+                                    </table>
+                                </div>
+                            </div>
+                        `;
+                        
+                        layer.bindPopup(popupContent, {
+                            className: 'custom-tailwind-popup'
+                        });
 
-        map.on('mousemove', function (e) {
-            document.getElementById('coord-display').innerText = `Lat: ${e.latlng.lat.toFixed(5)} | Lng: ${e.latlng.lng.toFixed(5)}`;
-        });
+                        // Efek Hover pada Polygon SWP
+                        layer.on({
+                            mouseover: function (e) {
+                                var l = e.target;
+                                l.setStyle({ weight: 3, fillOpacity: 0.8, color: '#F59E0B' });
+                            },
+                            mouseout: function (e) {
+                                swpGeoJson.resetStyle(e.target);
+                            }
+                        });
+                    }
+                });
+                layerSWP.addLayer(swpGeoJson);
+                globalDataBounds.extend(swpGeoJson.getBounds());
+                hasData = true;
+            }
+
+
+            // --- 4. Interaktivitas Tools Panel di Peta ---
+            
+            document.getElementById('basemap-select').addEventListener('change', function (e) {
+                if (e.target.value === 'osm') {
+                    osm.addTo(map);
+                    map.removeLayer(satellite);
+                } else {
+                    satellite.addTo(map);
+                    map.removeLayer(osm);
+                }
+            });
+
+            document.getElementById('cb-kec').addEventListener('change', function (e) {
+                if (e.target.checked) map.addLayer(layerKec);
+                else map.removeLayer(layerKec);
+            });
+
+            document.getElementById('cb-desa').addEventListener('change', function (e) {
+                if (e.target.checked) map.addLayer(layerDeskel);
+                else map.removeLayer(layerDeskel);
+            });
+
+            document.getElementById('cb-swp').addEventListener('change', function (e) {
+                if (e.target.checked) map.addLayer(layerSWP);
+                else map.removeLayer(layerSWP);
+            });
+
+            // Tampilkan Koordinat Kursor di Bawah Layar
+            map.on('mousemove', function (e) {
+                document.getElementById('coord-display').innerText = `Lat: ${e.latlng.lat.toFixed(5)} | Lng: ${e.latlng.lng.toFixed(5)}`;
+            });
+            
+        }); // Penutup window.onload
     </script>
 </body>
 
