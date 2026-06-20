@@ -17,13 +17,10 @@
                         sans: ['"Plus Jakarta Sans"', 'sans-serif'],
                     },
                     colors: {
-                        primary: '#0B4A7F',    /* Biru Khas Web DPTR Bogor */
-                        secondary: '#F59E0B',  /* Aksen Kuning/Emas DPTR */
-                        slate: {
-                            50: '#f8fafc', 100: '#f1f5f9', 200: '#e2e8f0', 300: '#cbd5e1',
-                            400: '#94a3b8', 500: '#64748b', 600: '#475569', 700: '#334155',
-                            800: '#1e293b', 900: '#0f172a',
-                        }
+                        primary: '#0B4A7F',
+                        secondary: '#F59E0B',
+                        darkBg: '#18181b',
+                        darkPanel: '#27272a'
                     }
                 }
             }
@@ -31,12 +28,15 @@
     </script>
 
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 
     <link rel="stylesheet" href="https://unpkg.com/@geoman-io/leaflet-geoman-free@latest/dist/leaflet-geoman.css" />
     <script src="https://unpkg.com/@geoman-io/leaflet-geoman-free@latest/dist/leaflet-geoman.min.js"></script>
+
+    <script src="https://cdn.jsdelivr.net/npm/@turf/turf@6/turf.min.js"></script>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/togeojson/0.16.0/togeojson.min.js"></script>
 
     <script src="./BATAS_ADMINISTRASI_KEC_LN_1.js"></script>
     <script src="./BATAS_ADMINISTRASI_DESKEL_LN_2.js"></script>
@@ -71,6 +71,7 @@
             background: #94a3b8;
         }
 
+        /* Custom Checkbox & Range */
         input[type="checkbox"] {
             accent-color: #0B4A7F;
             cursor: pointer;
@@ -79,22 +80,46 @@
             border-radius: 4px;
         }
 
+        input[type=range] {
+            -webkit-appearance: none;
+            width: 100px;
+            background: transparent;
+        }
+
+        input[type=range]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            height: 12px;
+            width: 12px;
+            border-radius: 50%;
+            background: #0B4A7F;
+            cursor: pointer;
+            margin-top: -4px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+        }
+
+        input[type=range]::-webkit-slider-runnable-track {
+            width: 100%;
+            height: 4px;
+            cursor: pointer;
+            background: #cbd5e1;
+            border-radius: 2px;
+        }
+
         .leaflet-bar {
             border: 1px solid rgba(226, 232, 240, 0.8) !important;
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06) !important;
-            border-radius: 10px !important;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1) !important;
+            border-radius: 8px !important;
             overflow: hidden;
         }
 
         .leaflet-bar a {
             background-color: rgba(255, 255, 255, 0.95) !important;
-            backdrop-filter: blur(8px);
             color: #475569 !important;
             border-bottom: 1px solid #f1f5f9 !important;
             transition: all 0.3s ease;
-            width: 38px !important;
-            height: 38px !important;
-            line-height: 38px !important;
+            width: 34px !important;
+            height: 34px !important;
+            line-height: 34px !important;
         }
 
         .leaflet-bar a:hover {
@@ -103,22 +128,10 @@
         }
 
         .leaflet-top.leaflet-right .leaflet-control {
-            margin-top: 250px;
-            margin-right: 24px;
+            margin-top: 20px;
+            margin-right: 20px;
         }
 
-        .leaflet-bottom.leaflet-left .leaflet-control {
-            margin-bottom: 24px;
-            margin-left: 24px;
-            border: 1px solid rgba(226, 232, 240, 0.8);
-            background: rgba(255, 255, 255, 0.95);
-            backdrop-filter: blur(8px);
-            padding: 4px 10px;
-            border-radius: 8px;
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
-        }
-
-        /* CUSTOM LEAFLET POPUP TAILWIND */
         .custom-tailwind-popup .leaflet-popup-content-wrapper {
             padding: 0;
             border-radius: 0.75rem;
@@ -132,16 +145,11 @@
             width: 280px !important;
         }
 
-        .custom-tailwind-popup .leaflet-popup-tip-container {
-            margin-top: -1px;
-        }
-
         .glass-panel {
-            background: rgba(255, 255, 255, 0.85);
+            background: rgba(255, 255, 255, 0.95);
             backdrop-filter: blur(16px);
-            -webkit-backdrop-filter: blur(16px);
             border: 1px solid rgba(255, 255, 255, 0.6);
-            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05), 0 8px 10px -6px rgba(0, 0, 0, 0.01);
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05);
         }
 
         .fade-in {
@@ -151,7 +159,7 @@
         @keyframes fadeIn {
             from {
                 opacity: 0;
-                transform: translateY(15px);
+                transform: translateY(10px);
             }
 
             to {
@@ -159,15 +167,78 @@
                 transform: translateY(0);
             }
         }
+
+        /* Sidebar PANTAU Adjustments */
+        .pantau-sidebar {
+            width: 320px;
+            max-height: calc(100vh - 120px);
+            overflow-y: auto;
+        }
+
+        .accordion-header {
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+
+        .accordion-content {
+            display: none;
+            padding: 12px 16px;
+            border-top: 1px solid #e2e8f0;
+        }
+
+        .accordion-content.active {
+            display: block;
+        }
     </style>
 </head>
 
 <body class="overflow-hidden bg-slate-50">
 
-    <div id="auth-screen"
-        class="fixed inset-0 z-[9999] flex items-center justify-center bg-[url('https://bogorkab.go.id/assets/images/tegarBeriman.jpeg')] bg-cover bg-center">
-        <div class="absolute inset-0 bg-primary/80 backdrop-blur-sm"></div>
+    <div id="disclaimer-modal"
+        class="fixed inset-0 z-[99999] flex items-center justify-center bg-slate-900/80 backdrop-blur-sm transition-opacity">
+        <div
+            class="bg-white border border-slate-200 w-full max-w-lg rounded-2xl shadow-2xl overflow-hidden flex flex-col fade-in text-slate-700">
+            <div class="px-6 py-4 border-b border-slate-100 flex justify-between items-center bg-slate-50">
+                <div class="flex items-center space-x-3">
+                    <i class="fa-solid fa-circle-exclamation text-secondary text-xl"></i>
+                    <h3 class="text-primary font-bold text-lg">Penafian (Disclaimer)</h3>
+                </div>
+            </div>
+            <div class="p-6 overflow-y-auto max-h-[70vh]">
+                <h4 class="text-slate-800 font-extrabold text-xl mb-4">Syarat dan Ketentuan</h4>
+                <p class="text-sm leading-relaxed mb-4 text-slate-600">
+                    Setiap informasi yang dikelola unit pengelola dan penyebarluasan data serta ditampilkan pada <strong
+                        class="text-primary">WebGIS Dinas Pertanahan dan Tata Ruang Kabupaten Bogor</strong> diberikan
+                    sebagaimana adanya dengan tetap memperhatikan ketentuan perlindungan informasi yang bersifat pribadi
+                    dan atau bersifat rahasia, <strong class="text-slate-800 font-bold">serta dengan pengertian bahwa
+                        unit pengelola dan penyebarluasan data tidak bertanggung jawab atau menjamin ketepatan waktu,
+                        keakuratan, atau kelengkapan informasi tersebut.</strong>
+                </p>
+                <p class="text-sm leading-relaxed mb-4 text-slate-600">
+                    Jika pengguna bermaksud mengandalkan informasi apa pun yang ditampilkan pada Portal ini, maka
+                    pengguna dapat mengajukan permohonan Pelayanan Informasi Publik ke Dinas Pertanahan dan Tata Ruang
+                    Kabupaten Bogor melalui email resmi instansi: <a href="mailto:dptr@bogorkab.go.id"
+                        class="font-semibold text-primary hover:underline">dptr@bogorkab.go.id</a>.
+                </p>
+                <p class="text-sm leading-relaxed text-slate-600">
+                    Apabila pengguna menemukan ketidaksesuaian informasi terkait letak, bentuk, posisi, serta informasi
+                    penjelasan lainnya maka pengguna dapat melakukan klarifikasi kepada unit produksi terkait data dan
+                    informasi dimaksud atau pengguna dapat menyampaikan informasi tersebut melalui kanal layanan
+                    pengaduan atau <a href="#" class="font-semibold text-primary hover:underline">#TanyaDPTRBogor</a>.
+                </p>
+            </div>
+            <div class="px-6 py-4 border-t border-slate-100 flex justify-end bg-slate-50">
+                <button onclick="acceptDisclaimer()"
+                    class="px-6 py-2.5 bg-primary hover:bg-blue-800 text-white font-bold rounded-xl shadow-md hover:shadow-lg transition-all">
+                    Saya Mengerti & Setuju
+                </button>
+            </div>
+        </div>
+    </div>
 
+    <div id="auth-screen"
+        class="fixed inset-0 z-[9999] hidden items-center justify-center bg-[url('https://bogorkab.go.id/assets/images/tegarBeriman.jpeg')] bg-cover bg-center">
+        <div class="absolute inset-0 bg-primary/80 backdrop-blur-sm"></div>
         <div class="relative w-full max-w-md mx-4 bg-white rounded-2xl shadow-2xl overflow-hidden fade-in">
             <div class="bg-slate-50 border-b border-slate-100 p-6 flex flex-col items-center text-center">
                 <img src="https://dptr.bogorkab.go.id/uploads/settings/17682882065023.png" alt="Logo DPTR"
@@ -177,109 +248,90 @@
                     Interaktif</h1>
                 <p class="text-xs text-slate-500 font-medium mt-1">Dinas Pertanahan dan Tata Ruang Kabupaten Bogor</p>
             </div>
-
             <div class="p-8">
+
                 <div id="login-section" class="block transition-all duration-300">
-                    <h2 class="text-xl font-bold text-slate-800 mb-6">Masuk ke Akun Anda</h2>
-                    <form onsubmit="handleLogin(event)" class="space-y-4">
+                    <form onsubmit="handleLogin(event)" class="space-y-4 mb-6">
                         <div>
                             <label
-                                class="block text-xs font-bold text-slate-500 uppercase tracking-wide mb-1.5">Email</label>
-                            <input type="email" required placeholder="admin@bogorkab.go.id"
-                                class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all">
+                                class="block text-xs font-bold text-slate-500 uppercase tracking-wide mb-1.5">Username /
+                                Email</label>
+                            <input type="text" id="login-user" required placeholder="Masukkan username atau email"
+                                class="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all">
                         </div>
                         <div>
                             <label
                                 class="block text-xs font-bold text-slate-500 uppercase tracking-wide mb-1.5">Password</label>
                             <input type="password" required placeholder="••••••••"
-                                class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all">
+                                class="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all">
                         </div>
                         <button type="submit"
-                            class="w-full py-3 mt-2 bg-primary hover:bg-blue-800 text-white rounded-xl font-bold shadow-md hover:shadow-lg transition-all">Masuk
-                            (Log In)</button>
+                            class="w-full py-2.5 bg-primary hover:bg-blue-800 text-white rounded-xl font-bold shadow-md hover:shadow-lg transition-all mt-2">
+                            Masuk
+                        </button>
                     </form>
 
-                    <div
-                        class="my-6 flex items-center before:mt-0.5 before:flex-1 before:border-t before:border-slate-200 after:mt-0.5 after:flex-1 after:border-t after:border-slate-200">
-                        <p class="mx-4 mb-0 text-center text-xs font-semibold text-slate-400 uppercase">ATAU</p>
-                    </div>
-
-                    <div class="space-y-3">
-                        <button onclick="enterApp('Google User')"
-                            class="w-full py-2.5 px-4 bg-white border border-slate-200 hover:bg-slate-50 text-slate-700 rounded-xl font-semibold shadow-sm flex items-center justify-center transition-all">
-                            <i class="fa-brands fa-google text-red-500 mr-2 text-lg"></i> Lanjutkan dengan Google
-                        </button>
-                        <button onclick="enterApp('Guest User')"
-                            class="w-full py-2.5 px-4 bg-slate-100 border border-slate-200 hover:bg-slate-200 text-slate-700 rounded-xl font-semibold shadow-sm flex items-center justify-center transition-all">
-                            <i class="fa-solid fa-user-shield text-slate-500 mr-2 text-lg"></i> Masuk sebagai Tamu
-                        </button>
-                    </div>
-
-                    <p class="mt-8 text-center text-sm text-slate-600">
-                        Belum punya akun? <a href="#" onclick="toggleAuthMode('register')"
-                            class="text-primary font-bold hover:underline">Daftar sekarang</a>
-                    </p>
-                </div>
-
-                <div id="register-section" class="hidden transition-all duration-300">
-                    <h2 class="text-xl font-bold text-slate-800 mb-6">Buat Akun Baru</h2>
-                    <form onsubmit="handleRegister(event)" class="space-y-4">
-                        <div>
-                            <label
-                                class="block text-xs font-bold text-slate-500 uppercase tracking-wide mb-1.5">Email</label>
-                            <input type="email" id="reg-email" required placeholder="email@contoh.com"
-                                class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all">
-                        </div>
-                        <div>
-                            <label
-                                class="block text-xs font-bold text-slate-500 uppercase tracking-wide mb-1.5">Password</label>
-                            <input type="password" id="reg-pass" required placeholder="Buat password"
-                                class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all">
-                        </div>
-                        <div>
-                            <label
-                                class="block text-xs font-bold text-slate-500 uppercase tracking-wide mb-1.5">Konfirmasi
-                                Password</label>
-                            <input type="password" id="reg-pass-confirm" required placeholder="Ulangi password"
-                                class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all">
-                        </div>
-                        <button type="submit"
-                            class="w-full py-3 mt-2 bg-secondary hover:bg-yellow-600 text-white rounded-xl font-bold shadow-md hover:shadow-lg transition-all">Daftar
-                            (Register)</button>
-                    </form>
-
-                    <div
-                        class="my-6 flex items-center before:mt-0.5 before:flex-1 before:border-t before:border-slate-200 after:mt-0.5 after:flex-1 after:border-t after:border-slate-200">
-                        <p class="mx-4 mb-0 text-center text-xs font-semibold text-slate-400 uppercase">ATAU</p>
+                    <div class="flex items-center justify-between mb-6">
+                        <hr class="w-full border-slate-200">
+                        <span class="px-3 text-[10px] text-slate-400 font-bold uppercase tracking-wider">Atau</span>
+                        <hr class="w-full border-slate-200">
                     </div>
 
                     <button onclick="enterApp('Google User')"
                         class="w-full py-2.5 px-4 bg-white border border-slate-200 hover:bg-slate-50 text-slate-700 rounded-xl font-semibold shadow-sm flex items-center justify-center transition-all mb-3">
-                        <i class="fa-brands fa-google text-red-500 mr-2 text-lg"></i> Daftar dengan Google
+                        <i class="fa-brands fa-google text-red-500 mr-2 text-lg"></i> Lanjutkan dengan Google
                     </button>
-
                     <button onclick="enterApp('Guest User')"
                         class="w-full py-2.5 px-4 bg-slate-100 border border-slate-200 hover:bg-slate-200 text-slate-700 rounded-xl font-semibold shadow-sm flex items-center justify-center transition-all">
                         <i class="fa-solid fa-user-shield text-slate-500 mr-2 text-lg"></i> Masuk sebagai Tamu
                     </button>
 
-                    <p class="mt-8 text-center text-sm text-slate-600">
-                        Sudah punya akun? <a href="#" onclick="toggleAuthMode('login')"
-                            class="text-primary font-bold hover:underline">Masuk di sini</a>
-                    </p>
+                    <p class="text-center text-sm text-slate-500 mt-6">Belum punya akun? <a href="#"
+                            onclick="toggleAuthMode('register')" class="text-primary font-bold hover:underline">Daftar
+                            di sini</a></p>
                 </div>
+
+                <div id="register-section" class="hidden transition-all duration-300">
+                    <form onsubmit="handleRegister(event)" class="space-y-4 mb-6">
+                        <div>
+                            <label
+                                class="block text-xs font-bold text-slate-500 uppercase tracking-wide mb-1.5">Username</label>
+                            <input type="text" id="reg-user" required placeholder="Buat username"
+                                class="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all">
+                        </div>
+                        <div>
+                            <label
+                                class="block text-xs font-bold text-slate-500 uppercase tracking-wide mb-1.5">Email</label>
+                            <input type="email" required placeholder="email@contoh.com"
+                                class="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all">
+                        </div>
+                        <div>
+                            <label
+                                class="block text-xs font-bold text-slate-500 uppercase tracking-wide mb-1.5">Password</label>
+                            <input type="password" required placeholder="Buat password"
+                                class="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all">
+                        </div>
+                        <button type="submit"
+                            class="w-full py-2.5 bg-secondary hover:bg-yellow-600 text-white rounded-xl font-bold shadow-md hover:shadow-lg transition-all mt-2">
+                            Daftar Sekarang
+                        </button>
+                    </form>
+
+                    <p class="text-center text-sm text-slate-500">Sudah punya akun? <a href="#"
+                            onclick="toggleAuthMode('login')" class="text-primary font-bold hover:underline">Masuk di
+                            sini</a></p>
+                </div>
+
             </div>
         </div>
     </div>
 
-
     <div id="main-app" class="hidden w-full h-screen flex">
-
         <aside
-            class="w-[280px] bg-white flex flex-col border-r border-slate-200 z-20 transition-all duration-300 shadow-[4px_0_24px_rgba(0,0,0,0.02)]">
+            class="w-[280px] bg-white flex flex-col border-r border-slate-200 z-[60] transition-all duration-300 shadow-[4px_0_24px_rgba(0,0,0,0.02)]">
             <div class="p-6 flex items-center space-x-4 border-b border-slate-100">
                 <div class="bg-white p-1 rounded-xl shadow-sm border border-slate-100">
-                    <img src="https://dptr.bogorkab.go.id/uploads/settings/17682882065023.png" alt="Logo DPTR"
+                    <img src="https://dptr.bogorkab.go.id/uploads/settings/17682882065023.png" alt="Logo"
                         class="w-10 h-10 object-cover"
                         onerror="this.src='https://ui-avatars.com/api/?name=DPTR&background=0B4A7F&color=fff'">
                 </div>
@@ -293,70 +345,31 @@
             <nav class="flex-1 overflow-y-auto py-6 px-4">
                 <p class="px-3 text-[10px] font-extrabold text-slate-400 uppercase tracking-widest mb-3">Menu Utama</p>
                 <ul class="space-y-1.5">
-                    <li>
-                        <button onclick="showPage('home')" id="nav-home"
-                            class="nav-btn active w-full flex items-center px-4 py-3 rounded-xl transition-all duration-300 font-semibold bg-gradient-to-r from-blue-50 to-white text-primary border-l-4 border-primary shadow-sm">
-                            <i class="fa-solid fa-house w-6 text-center text-lg"></i>
-                            <span class="ml-2 text-sm tracking-wide">Beranda</span>
-                        </button>
-                    </li>
-                    <li>
-                        <button onclick="showPage('map')" id="nav-map"
-                            class="nav-btn w-full flex items-center px-4 py-3 rounded-xl text-slate-500 hover:bg-slate-50 hover:text-primary transition-all duration-300 font-medium border-l-4 border-transparent">
-                            <i class="fa-solid fa-layer-group w-6 text-center text-lg"></i>
-                            <span class="ml-2 text-sm tracking-wide">Peta Interaktif</span>
-                        </button>
-                    </li>
-                    <li>
-                        <button onclick="showPage('dashboard')" id="nav-dashboard"
-                            class="nav-btn w-full flex items-center px-4 py-3 rounded-xl text-slate-500 hover:bg-slate-50 hover:text-primary transition-all duration-300 font-medium border-l-4 border-transparent">
-                            <i class="fa-solid fa-chart-pie w-6 text-center text-lg"></i>
-                            <span class="ml-2 text-sm tracking-wide">Dashboard Statistik</span>
-                        </button>
-                    </li>
-
-                    <li class="pt-6 pb-2">
-                        <p class="px-3 text-[10px] font-extrabold text-slate-400 uppercase tracking-widest">Informasi
-                            Publik</p>
-                    </li>
-                    <li>
-                        <button onclick="showPage('regulasi')" id="nav-regulasi"
-                            class="nav-btn w-full flex items-center px-4 py-3 rounded-xl text-slate-500 hover:bg-slate-50 hover:text-primary transition-all duration-300 font-medium border-l-4 border-transparent">
-                            <i class="fa-solid fa-book w-6 text-center text-lg"></i>
-                            <span class="ml-2 text-sm tracking-wide">Data Tata Ruang</span>
-                        </button>
-                    </li>
-                    <li>
-                        <button onclick="showPage('profile')" id="nav-profile"
-                            class="nav-btn w-full flex items-center px-4 py-3 rounded-xl text-slate-500 hover:bg-slate-50 hover:text-primary transition-all duration-300 font-medium border-l-4 border-transparent">
-                            <i class="fa-solid fa-building w-6 text-center text-lg"></i>
-                            <span class="ml-2 text-sm tracking-wide">Profil Dinas</span>
-                        </button>
-                    </li>
-                    <li>
-                        <button onclick="showPage('contact')" id="nav-contact"
-                            class="nav-btn w-full flex items-center px-4 py-3 rounded-xl text-slate-500 hover:bg-slate-50 hover:text-primary transition-all duration-300 font-medium border-l-4 border-transparent">
-                            <i class="fa-solid fa-headset w-6 text-center text-lg"></i>
-                            <span class="ml-2 text-sm tracking-wide">Layanan & Kontak</span>
-                        </button>
-                    </li>
+                    <li><button onclick="showPage('home')" id="nav-home"
+                            class="nav-btn w-full flex items-center px-4 py-3 rounded-xl text-slate-500 hover:bg-slate-50 hover:text-primary transition-all duration-300 font-medium border-l-4 border-transparent"><i
+                                class="fa-solid fa-house w-6 text-center text-lg"></i><span
+                                class="ml-2 text-sm tracking-wide">Beranda</span></button></li>
+                    <li><button onclick="showPage('map')" id="nav-map"
+                            class="nav-btn active w-full flex items-center px-4 py-3 rounded-xl transition-all duration-300 font-semibold bg-gradient-to-r from-blue-50 to-white text-primary border-l-4 border-primary shadow-sm"><i
+                                class="fa-solid fa-layer-group w-6 text-center text-lg"></i><span
+                                class="ml-2 text-sm tracking-wide">Peta Interaktif</span></button></li>
+                    <li><button onclick="showPage('dashboard')" id="nav-dashboard"
+                            class="nav-btn w-full flex items-center px-4 py-3 rounded-xl text-slate-500 hover:bg-slate-50 hover:text-primary transition-all duration-300 font-medium border-l-4 border-transparent"><i
+                                class="fa-solid fa-chart-pie w-6 text-center text-lg"></i><span
+                                class="ml-2 text-sm tracking-wide">Dashboard Statistik</span></button></li>
                 </ul>
             </nav>
 
             <div class="p-4 bg-slate-50 border-t border-slate-200/60 mt-auto">
                 <div onclick="logout()" title="Klik untuk keluar"
-                    class="flex items-center space-x-3 p-2.5 rounded-xl bg-white border border-slate-200 shadow-sm cursor-pointer hover:shadow-md transition duration-300 hover:border-red-500/30 group">
-                    <img src="https://ui-avatars.com/api/?name=Admin+Publik&background=0B4A7F&color=fff&bold=true"
-                        alt="User" class="w-9 h-9 rounded-full shadow-sm profile-avatar">
+                    class="flex items-center space-x-3 p-2.5 rounded-xl bg-white border border-slate-200 shadow-sm cursor-pointer hover:border-red-500/30 group">
+                    <img src="https://ui-avatars.com/api/?name=User&background=0B4A7F&color=fff" alt="User"
+                        class="w-9 h-9 rounded-full profile-avatar">
                     <div class="flex-1">
-                        <p
-                            class="text-xs font-bold text-slate-800 group-hover:text-red-500 transition-colors profile-name">
-                            Guest User</p>
-                        <p class="text-[10px] font-semibold text-slate-500 uppercase tracking-wide profile-role">Akses
-                            Publik</p>
+                        <p class="text-xs font-bold text-slate-800 profile-name">User</p>
+                        <p class="text-[10px] font-semibold text-slate-500 profile-role">Akses</p>
                     </div>
-                    <i
-                        class="fa-solid fa-right-from-bracket text-[12px] text-slate-400 group-hover:text-red-500 transition-colors"></i>
+                    <i class="fa-solid fa-right-from-bracket text-[12px] text-slate-400 group-hover:text-red-500"></i>
                 </div>
             </div>
         </aside>
@@ -364,181 +377,161 @@
         <main class="flex-1 flex flex-col h-screen relative bg-[#f4f7fb]">
             <header
                 class="h-[72px] bg-white/80 backdrop-blur-md border-b border-slate-200 flex items-center justify-between px-8 z-[30] sticky top-0 shadow-[0_4px_20px_rgba(0,0,0,0.01)]">
-                <h2 id="page-title" class="font-bold text-xl text-slate-800 tracking-tight">Beranda</h2>
+                <h2 id="page-title" class="font-bold text-xl text-slate-800 tracking-tight">Peta Interaktif</h2>
                 <div class="flex items-center space-x-4">
                     <div class="relative group">
                         <input type="text" placeholder="Cari area, nomor persil..."
-                            class="pl-10 pr-4 py-2 border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary w-64 md:w-80 bg-slate-50 hover:bg-white transition-all shadow-sm">
+                            class="pl-10 pr-4 py-2 border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary w-64 bg-slate-50 transition-all shadow-sm">
                         <i
-                            class="fa-solid fa-search absolute left-3.5 top-2.5 text-slate-400 group-focus-within:text-primary transition-colors text-sm"></i>
+                            class="fa-solid fa-search absolute left-3.5 top-2.5 text-slate-400 group-focus-within:text-primary text-sm"></i>
                     </div>
-                    <button
-                        class="relative w-10 h-10 rounded-lg border border-slate-200 bg-white flex items-center justify-center hover:bg-slate-50 hover:text-primary hover:shadow-sm transition-all text-slate-500">
-                        <i class="fa-solid fa-bell"></i>
-                        <span class="absolute top-2 right-2 w-2 h-2 bg-red-500 rounded-full border border-white"></span>
-                    </button>
                 </div>
             </header>
 
             <div class="flex-1 overflow-y-auto relative">
-
-                <div id="page-home" class="page-content h-full fade-in">
-                    <div class="relative w-full h-full flex items-center justify-center overflow-hidden">
-                        <div
-                            class="absolute inset-0 bg-[url('https://bogorkab.go.id/assets/images/tegarBeriman.jpeg')] bg-cover bg-center transform scale-105 hover:scale-100 transition duration-[5000ms] ease-out">
-                        </div>
-                        <div
-                            class="absolute inset-0 bg-gradient-to-tr from-primary/95 via-primary/85 to-slate-900/80 backdrop-blur-[2px]">
-                        </div>
-                        <div class="relative z-10 text-center px-6 w-full max-w-6xl mx-auto flex flex-col items-center">
-                            <span
-                                class="inline-flex items-center px-3.5 py-1.5 rounded-full bg-white/10 border border-white/20 text-white text-[11px] font-bold tracking-[0.2em] mb-8 uppercase shadow-lg backdrop-blur-md">
-                                <span class="w-1.5 h-1.5 rounded-full bg-secondary mr-2 animate-pulse"></span> Portal
-                                Geospasial Interaktif
-                            </span>
-                            <h1
-                                class="text-3xl md:text-5xl lg:text-[3.25rem] font-extrabold text-white mb-6 leading-tight tracking-tight drop-shadow-md">
-                                Dinas Pertanahan dan Tata Ruang
-                                <span class="block text-secondary mt-3 text-2xl md:text-4xl lg:text-[2.75rem]">Kabupaten
-                                    Bogor</span>
-                            </h1>
-                            <p
-                                class="text-base md:text-lg text-blue-100/90 mb-12 max-w-2xl mx-auto font-medium leading-relaxed drop-shadow">
-                                Akses data geospasial terintegrasi untuk mendukung perencanaan wilayah, perizinan, dan
-                                penataan ruang yang berkelanjutan.
-                            </p>
-                            <div
-                                class="flex flex-col sm:flex-row items-center justify-center space-y-4 sm:space-y-0 sm:space-x-5 w-full">
-                                <button onclick="showPage('map')"
-                                    class="w-full sm:w-auto px-8 py-3.5 bg-secondary hover:bg-yellow-600 text-white rounded-xl font-bold shadow-lg hover:shadow-xl transform hover:-translate-y-1 transition-all duration-300 flex items-center justify-center group">
-                                    <i
-                                        class="fa-solid fa-map text-lg mr-3 group-hover:scale-110 transition-transform"></i>
-                                    Buka Peta Interaktif
-                                </button>
-                                <button onclick="showPage('dashboard')"
-                                    class="w-full sm:w-auto px-8 py-3.5 bg-white text-slate-800 hover:bg-slate-50 rounded-xl font-bold shadow-lg hover:shadow-xl transform hover:-translate-y-1 transition-all duration-300 flex items-center justify-center group border border-slate-200">
-                                    <i
-                                        class="fa-solid fa-chart-pie text-lg mr-3 text-primary group-hover:scale-110 transition-transform"></i>
-                                    Lihat Statistik
-                                </button>
-                            </div>
-                        </div>
-                    </div>
+                <div id="page-home"
+                    class="page-content hidden h-full flex items-center justify-center fade-in bg-slate-100">
+                    <h1 class="text-3xl text-slate-400 font-bold">Halaman Beranda</h1>
+                </div>
+                <div id="page-dashboard"
+                    class="page-content hidden h-full flex items-center justify-center fade-in bg-slate-100">
+                    <h1 class="text-3xl text-slate-400 font-bold">Dashboard Statistik</h1>
                 </div>
 
-                <div id="page-map" class="page-content hidden h-full w-full relative fade-in bg-slate-100">
+                <div id="page-map" class="page-content h-full w-full relative fade-in bg-slate-100">
 
                     <div
-                        class="absolute top-6 left-1/2 transform -translate-x-1/2 z-[400] glass-panel px-3 py-1.5 rounded-lg text-[10px] font-bold text-slate-600 flex items-center space-x-1.5 uppercase tracking-widest border-t-[3px] border-t-red-500">
-                        <i class="fa-solid fa-location-arrow text-slate-400 transform -rotate-45"></i>
-                        <span>Utara</span>
-                    </div>
-
-                    <div class="absolute top-6 right-6 z-[400] glass-panel p-1.5 rounded-2xl flex flex-col space-y-1.5 shadow-md"
-                        id="map-tools">
-
-                        <button onclick="if(map){map.setView([-6.550, 106.830], 10);}"
-                            class="w-10 h-10 rounded-xl flex items-center justify-center text-slate-600 hover:bg-white hover:text-primary hover:shadow-sm transition-all"
-                            title="Reset Tampilan">
-                            <i class="fa-solid fa-house"></i>
-                        </button>
-
-                        <div class="w-8 h-[1px] bg-slate-200 mx-auto"></div>
-
-                        <button onclick="triggerTool('Marker')" id="tool-Marker"
-                            class="tool-btn w-10 h-10 rounded-xl flex items-center justify-center text-slate-600 hover:bg-white hover:text-primary hover:shadow-sm transition-all"
-                            title="Digitasi Titik (Point)">
-                            <i class="fa-solid fa-location-dot"></i>
-                        </button>
-                        <button onclick="triggerTool('Line')" id="tool-Line"
-                            class="tool-btn w-10 h-10 rounded-xl flex items-center justify-center text-slate-600 hover:bg-white hover:text-primary hover:shadow-sm transition-all"
-                            title="Digitasi Garis (LineString)">
-                            <i class="fa-solid fa-share-nodes"></i>
-                        </button>
-                        <button onclick="triggerTool('Polygon')" id="tool-Polygon"
-                            class="tool-btn w-10 h-10 rounded-xl flex items-center justify-center text-slate-600 hover:bg-white hover:text-primary hover:shadow-sm transition-all"
-                            title="Digitasi Area (Polygon)">
-                            <i class="fa-solid fa-draw-polygon"></i>
-                        </button>
-
-                        <button onclick="triggerEdit()" id="tool-Edit"
-                            class="tool-btn w-10 h-10 rounded-xl flex items-center justify-center text-slate-600 hover:bg-white hover:text-secondary hover:shadow-sm transition-all"
-                            title="Edit Objek Digitasi">
-                            <i class="fa-solid fa-pen-to-square"></i>
-                        </button>
-                        <button onclick="triggerDelete()" id="tool-Delete"
-                            class="tool-btn w-10 h-10 rounded-xl flex items-center justify-center text-slate-600 hover:bg-white hover:text-red-500 hover:shadow-sm transition-all"
-                            title="Hapus Objek Digitasi">
-                            <i class="fa-solid fa-eraser"></i>
-                        </button>
-
-                        <div class="w-8 h-[1px] bg-slate-200 mx-auto"></div>
-
-                        <button onclick="toggleMeasure()" id="tool-Measure"
-                            class="tool-btn w-10 h-10 rounded-xl flex items-center justify-center text-slate-600 hover:bg-white hover:text-emerald-600 hover:shadow-sm transition-all"
-                            title="Ukur Panjang / Jarak (Meter/Km)">
-                            <i class="fa-solid fa-ruler-combined"></i>
-                        </button>
-                        <button onclick="downloadGeoJSON()"
-                            class="w-10 h-10 rounded-xl flex items-center justify-center text-slate-600 hover:bg-white hover:text-primary hover:shadow-sm transition-all"
-                            title="Unduh Hasil Digitasi (Berformat GeoJSON)">
-                            <i class="fa-solid fa-download"></i>
-                        </button>
-                    </div>
-
-                    <div
-                        class="absolute top-6 left-6 z-[400] glass-panel rounded-2xl w-[280px] overflow-hidden flex flex-col shadow-lg">
-                        <div class="bg-slate-50/80 px-5 py-3.5 border-b border-slate-200/60 flex items-center">
-                            <div class="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center mr-3">
-                                <i class="fa-solid fa-layer-group text-primary"></i>
-                            </div>
-                            <h4 class="font-bold text-slate-800 text-sm tracking-wide">Layer Aktif</h4>
+                        class="absolute top-4 left-4 z-[400] glass-panel rounded-xl pantau-sidebar shadow-xl flex flex-col">
+                        <div
+                            class="px-4 py-3 border-b border-slate-200 bg-slate-50/80 rounded-t-xl flex justify-between items-center">
+                            <h3 class="font-bold text-primary flex items-center"><i class="fa-solid fa-globe mr-2"></i>
+                                WebGIS DPTR (Demo)</h3>
                         </div>
-                        <div class="p-5 space-y-5">
-                            <div>
-                                <h5 class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-3">Batas
-                                    Administrasi</h5>
-                                <div class="space-y-3">
-                                    <label class="flex items-center space-x-3 cursor-pointer group">
-                                        <input type="checkbox" id="cb-kec"
-                                            class="w-4 h-4 text-primary border-slate-300 rounded focus:ring-primary focus:ring-offset-1 transition"
-                                            checked>
-                                        <span
-                                            class="text-slate-600 group-hover:text-primary font-medium transition-colors text-sm">Batas
-                                            Kecamatan</span>
-                                    </label>
-                                    <label class="flex items-center space-x-3 cursor-pointer group">
-                                        <input type="checkbox" id="cb-desa"
-                                            class="w-4 h-4 text-primary border-slate-300 rounded focus:ring-primary focus:ring-offset-1 transition"
-                                            checked>
-                                        <span
-                                            class="text-slate-600 group-hover:text-primary font-medium transition-colors text-sm">Batas
-                                            Desa/Kelurahan</span>
-                                    </label>
-                                </div>
+
+                        <div class="accordion-section border-b border-slate-100 bg-white">
+                            <div class="accordion-header px-4 py-3 flex justify-between items-center bg-slate-50/50 hover:bg-slate-50"
+                                onclick="toggleAccordion(this)">
+                                <span class="text-xs font-bold text-slate-600 uppercase tracking-wide">Basemap</span>
+                                <i class="fa-solid fa-chevron-down text-slate-400 text-xs transition-transform"></i>
                             </div>
-                            <div>
-                                <h5 class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-3">Rencana
-                                    Tata Ruang</h5>
-                                <div class="space-y-3">
-                                    <label class="flex items-center space-x-3 cursor-pointer group">
-                                        <input type="checkbox" id="cb-swp"
-                                            class="w-4 h-4 text-primary border-slate-300 rounded focus:ring-primary focus:ring-offset-1 transition"
-                                            checked>
-                                        <span
-                                            class="text-slate-600 group-hover:text-primary font-medium transition-colors text-sm">Wilayah
-                                            Pengembangan (WP)</span>
-                                    </label>
-                                </div>
-                            </div>
-                            <div class="pt-4 border-t border-slate-200/60">
-                                <h5 class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-2.5">Peta
-                                    Dasar</h5>
+                            <div class="accordion-content active">
                                 <select id="basemap-select"
-                                    class="w-full text-sm font-medium border border-slate-200 rounded-xl p-2.5 bg-white text-slate-600 focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary cursor-pointer transition shadow-sm hover:border-slate-300">
-                                    <option value="osm">Open Street Map (OSM)</option>
-                                    <option value="satellite">Citra Satelit (Esri)</option>
+                                    class="w-full text-sm border border-slate-200 rounded-lg p-2 bg-white text-slate-600 focus:outline-none focus:border-primary transition">
+                                    <option value="osm">Open Street Map</option>
+                                    <option value="satellite">Google Satellite / Esri</option>
                                 </select>
+                            </div>
+                        </div>
+
+                        <div class="accordion-section border-b border-slate-100 bg-white">
+                            <div class="accordion-header px-4 py-3 flex justify-between items-center bg-slate-50/50 hover:bg-slate-50"
+                                onclick="toggleAccordion(this)">
+                                <span class="text-xs font-bold text-slate-600 uppercase tracking-wide">Coordinate
+                                    Search</span>
+                                <i class="fa-solid fa-chevron-down text-slate-400 text-xs transition-transform"></i>
+                            </div>
+                            <div class="accordion-content active space-y-3">
+                                <input type="text" id="coord-input" placeholder="Coordinates or place name"
+                                    class="w-full text-sm border border-slate-200 rounded-lg p-2 bg-slate-50 focus:outline-none focus:border-primary transition">
+                                <div class="flex space-x-2">
+                                    <input type="text" id="coord-label" placeholder="Label (optional)"
+                                        class="flex-1 text-sm border border-slate-200 rounded-lg p-2 bg-slate-50 focus:outline-none focus:border-primary transition">
+                                    <select
+                                        class="w-24 text-xs border border-slate-200 rounded-lg p-2 bg-slate-50 text-slate-600">
+                                        <option>No group</option>
+                                    </select>
+                                </div>
+                                <div class="flex flex-wrap gap-2">
+                                    <button onclick="searchCoordinate()"
+                                        class="px-3 py-1.5 bg-blue-600 text-white text-xs font-semibold rounded hover:bg-blue-700 transition">Add
+                                        Marker</button>
+                                    <button
+                                        class="px-3 py-1.5 bg-slate-100 text-slate-600 text-xs font-semibold border border-slate-200 rounded hover:bg-slate-200 transition">+
+                                        Group</button>
+                                    <button onclick="exportSearchedPoints()"
+                                        class="px-3 py-1.5 bg-slate-100 text-slate-600 text-xs font-semibold border border-slate-200 rounded hover:bg-slate-200 transition">Export</button>
+                                    <button onclick="clearSearchedPoints()"
+                                        class="px-3 py-1.5 bg-red-50 text-red-600 text-xs font-semibold border border-red-100 rounded hover:bg-red-100 transition">Clear</button>
+                                </div>
+                                <div id="search-results-list" class="mt-2 max-h-32 overflow-y-auto text-xs space-y-1">
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="accordion-section border-b border-slate-100 bg-white">
+                            <div class="accordion-header px-4 py-3 flex justify-between items-center bg-slate-50/50 hover:bg-slate-50"
+                                onclick="toggleAccordion(this)">
+                                <span class="text-xs font-bold text-slate-600 uppercase tracking-wide">Temporary
+                                    Data</span>
+                                <i class="fa-solid fa-chevron-down text-slate-400 text-xs transition-transform"></i>
+                            </div>
+                            <div class="accordion-content active space-y-3">
+                                <div class="flex space-x-2">
+                                    <label
+                                        class="flex-1 px-3 py-2 bg-slate-100 border border-slate-200 rounded text-xs font-semibold text-center cursor-pointer hover:bg-slate-200 transition flex items-center justify-center text-slate-600">
+                                        <i class="fa-solid fa-upload mr-1.5"></i> Upload File
+                                        <input type="file" id="file-upload" accept=".geojson,.json,.kml" class="hidden"
+                                            onchange="handleFileUpload(event)">
+                                    </label>
+                                    <button onclick="map.pm.enableDraw('Polygon')"
+                                        class="px-3 py-2 bg-slate-100 text-slate-600 text-xs font-semibold border border-slate-200 rounded hover:bg-slate-200 transition flex items-center"><i
+                                            class="fa-solid fa-draw-polygon mr-1.5"></i> Draw</button>
+                                    <button onclick="map.pm.enableDraw('Line')"
+                                        class="px-3 py-2 bg-slate-100 text-slate-600 text-xs font-semibold border border-slate-200 rounded hover:bg-slate-200 transition flex items-center"><i
+                                            class="fa-solid fa-share-nodes mr-1.5"></i> Line</button>
+                                </div>
+                                <div class="flex space-x-2">
+                                    <button onclick="downloadGeoJSON()"
+                                        class="flex-1 px-3 py-2 bg-emerald-50 text-emerald-700 text-xs font-semibold border border-emerald-200 rounded hover:bg-emerald-100 transition"><i
+                                            class="fa-solid fa-download mr-1.5"></i> Unduh GeoJSON</button>
+                                    <button onclick="runAnalysisMap()"
+                                        class="flex-1 px-3 py-2 bg-secondary text-white text-xs font-semibold border border-yellow-600 rounded hover:bg-yellow-600 shadow-sm transition"><i
+                                            class="fa-solid fa-chart-area mr-1.5"></i> Analysis Map</button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="accordion-section bg-white rounded-b-xl">
+                            <div class="accordion-header px-4 py-3 flex justify-between items-center bg-slate-50/50 hover:bg-slate-50"
+                                onclick="toggleAccordion(this)">
+                                <span class="text-xs font-bold text-slate-600 uppercase tracking-wide">Reference
+                                    Layers</span>
+                                <i class="fa-solid fa-chevron-down text-slate-400 text-xs transition-transform"></i>
+                            </div>
+                            <div class="accordion-content active space-y-4">
+                                <div>
+                                    <h6 class="text-[10px] font-bold text-slate-400 uppercase mb-2">Batas Administrasi
+                                    </h6>
+                                    <div class="flex items-center justify-between mb-2">
+                                        <label
+                                            class="flex items-center space-x-2 cursor-pointer text-xs font-medium text-slate-600">
+                                            <input type="checkbox" id="cb-kec" checked> <span>Kecamatan</span>
+                                        </label>
+                                        <input type="range" id="op-kec" min="0" max="1" step="0.1" value="1"
+                                            title="Atur Transparansi">
+                                    </div>
+                                    <div class="flex items-center justify-between">
+                                        <label
+                                            class="flex items-center space-x-2 cursor-pointer text-xs font-medium text-slate-600">
+                                            <input type="checkbox" id="cb-desa" checked> <span>Desa / Kelurahan</span>
+                                        </label>
+                                        <input type="range" id="op-desa" min="0" max="1" step="0.1" value="1"
+                                            title="Atur Transparansi">
+                                    </div>
+                                </div>
+                                <div class="pt-2 border-t border-slate-100">
+                                    <h6 class="text-[10px] font-bold text-slate-400 uppercase mb-2">Tematik Tata Ruang
+                                    </h6>
+                                    <div class="flex items-center justify-between">
+                                        <label
+                                            class="flex items-center space-x-2 cursor-pointer text-xs font-medium text-slate-600">
+                                            <input type="checkbox" id="cb-swp" checked> <span>Wilayah
+                                                Pengembangan</span>
+                                        </label>
+                                        <input type="range" id="op-swp" min="0" max="1" step="0.1" value="0.6"
+                                            title="Atur Transparansi">
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -546,442 +539,10 @@
                     <div
                         class="absolute bottom-6 left-1/2 transform -translate-x-1/2 z-[400] glass-panel px-4 py-2 rounded-full text-xs font-semibold text-slate-600 flex items-center space-x-2 shadow-sm">
                         <i class="fa-solid fa-crosshairs text-primary"></i>
-                        <span id="coord-display" class="tracking-widest">Lat: -6.47510 | Lng: 106.84010</span>
-                    </div>
-
-                    <div class="absolute bottom-6 right-6 z-[400] glass-panel p-4 rounded-2xl w-[220px] shadow-lg">
-                        <h4
-                            class="font-bold text-slate-800 mb-3 flex items-center text-sm border-b border-slate-200/60 pb-2">
-                            <i class="fa-solid fa-list-ul text-primary mr-2"></i> Legenda Peta
-                        </h4>
-                        <div class="space-y-2.5">
-                            <h6
-                                class="text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-2 border-b border-slate-100 pb-1">
-                                Batas Administrasi</h6>
-                            <div class="flex items-center text-slate-600 text-xs font-medium">
-                                <div class="w-5 border-b-[3px] border-dashed border-[#0B4A7F] mr-3"></div> Batas
-                                Kecamatan
-                            </div>
-                            <div class="flex items-center text-slate-600 text-xs font-medium">
-                                <div class="w-5 border-b-[2px] border-dotted border-[#64748b] mr-3"></div> Batas
-                                Desa/Kel.
-                            </div>
-
-                            <h6
-                                class="text-[10px] font-bold text-slate-500 uppercase tracking-wider mt-4 mb-2 border-b border-slate-100 pb-1">
-                                Wilayah Pengembangan (WP)</h6>
-                            <div class="flex items-center text-slate-600 text-xs font-medium"><span
-                                    class="w-3.5 h-3.5 bg-[#22c55e] inline-block mr-3 rounded-sm shadow-sm opacity-60 border border-[#22c55e]"></span>WP
-                                Barat</div>
-                            <div class="flex items-center text-slate-600 text-xs font-medium"><span
-                                    class="w-3.5 h-3.5 bg-[#eab308] inline-block mr-3 rounded-sm shadow-sm opacity-60 border border-[#eab308]"></span>WP
-                                Tengah</div>
-                            <div class="flex items-center text-slate-600 text-xs font-medium"><span
-                                    class="w-3.5 h-3.5 bg-[#3b82f6] inline-block mr-3 rounded-sm shadow-sm opacity-60 border border-[#3b82f6]"></span>WP
-                                Timur</div>
-                            <div class="flex items-center text-slate-600 text-xs font-medium"><span
-                                    class="w-3.5 h-3.5 bg-[#0B4A7F] inline-block mr-3 rounded-sm shadow-sm opacity-60 border border-[#0B4A7F]"></span>Lainnya
-                            </div>
-                        </div>
+                        <span id="coord-display" class="tracking-widest">Lat: 0.00 | Lng: 0.00</span>
                     </div>
 
                     <div id="map-container" class="w-full h-full z-0 relative bg-slate-100"></div>
-                </div>
-
-                <div id="page-dashboard" class="page-content hidden p-8 fade-in">
-                    <div class="max-w-7xl mx-auto">
-                        <div
-                            class="flex flex-col md:flex-row md:justify-between md:items-end mb-8 space-y-4 md:space-y-0">
-                            <div>
-                                <h3 class="text-2xl font-bold text-slate-800 tracking-tight">Dashboard Statistik</h3>
-                                <p class="text-slate-500 text-sm mt-1">Ringkasan peruntukan pola ruang Kabupaten Bogor
-                                    (Update: Juni 2026)</p>
-                            </div>
-                            <button
-                                class="px-5 py-2.5 bg-white border border-slate-200 text-slate-700 rounded-xl text-sm font-semibold hover:bg-slate-50 hover:text-primary hover:border-slate-300 transition-all shadow-sm flex items-center group">
-                                <i
-                                    class="fa-solid fa-download mr-2 text-slate-400 group-hover:text-primary transition-colors"></i>
-                                Ekspor Laporan
-                            </button>
-                        </div>
-
-                        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5 mb-8">
-                            <div
-                                class="bg-white rounded-2xl shadow-sm p-6 border border-slate-100 hover:shadow-lg hover:-translate-y-1 transition-all duration-300 group cursor-default">
-                                <div class="flex items-center justify-between mb-4">
-                                    <div
-                                        class="w-12 h-12 rounded-xl bg-gradient-to-br from-blue-50 to-blue-100 text-primary flex items-center justify-center group-hover:scale-110 transition-transform">
-                                        <i class="fa-solid fa-map text-lg"></i>
-                                    </div>
-                                    <span
-                                        class="text-[10px] font-bold text-green-600 bg-green-50 px-2.5 py-1 rounded-full border border-green-100">+1.2%</span>
-                                </div>
-                                <p class="text-sm text-slate-500 font-medium mb-1">Total Luas Wilayah</p>
-                                <h4 class="text-3xl font-extrabold text-slate-800 tracking-tight">299.178 <span
-                                        class="text-sm font-semibold text-slate-400 ml-1">Ha</span></h4>
-                            </div>
-                            <div
-                                class="bg-white rounded-2xl shadow-sm p-6 border border-slate-100 hover:shadow-lg hover:-translate-y-1 transition-all duration-300 group cursor-default">
-                                <div class="flex items-center justify-between mb-4">
-                                    <div
-                                        class="w-12 h-12 rounded-xl bg-gradient-to-br from-emerald-50 to-emerald-100 text-emerald-600 flex items-center justify-center group-hover:scale-110 transition-transform">
-                                        <i class="fa-solid fa-city text-lg"></i>
-                                    </div>
-                                </div>
-                                <p class="text-sm text-slate-500 font-medium mb-1">Jumlah Kecamatan</p>
-                                <h4 class="text-3xl font-extrabold text-slate-800 tracking-tight">40</h4>
-                            </div>
-                            <div
-                                class="bg-white rounded-2xl shadow-sm p-6 border border-slate-100 hover:shadow-lg hover:-translate-y-1 transition-all duration-300 group cursor-default">
-                                <div class="flex items-center justify-between mb-4">
-                                    <div
-                                        class="w-12 h-12 rounded-xl bg-gradient-to-br from-amber-50 to-amber-100 text-secondary flex items-center justify-center group-hover:scale-110 transition-transform">
-                                        <i class="fa-solid fa-house-chimney text-lg"></i>
-                                    </div>
-                                </div>
-                                <p class="text-sm text-slate-500 font-medium mb-1">Desa / Kelurahan</p>
-                                <h4 class="text-3xl font-extrabold text-slate-800 tracking-tight">435</h4>
-                            </div>
-                            <div
-                                class="bg-white rounded-2xl shadow-sm p-6 border border-slate-100 hover:shadow-lg hover:-translate-y-1 transition-all duration-300 group cursor-default">
-                                <div class="flex items-center justify-between mb-4">
-                                    <div
-                                        class="w-12 h-12 rounded-xl bg-gradient-to-br from-rose-50 to-rose-100 text-red-500 flex items-center justify-center group-hover:scale-110 transition-transform">
-                                        <i class="fa-solid fa-industry text-lg"></i>
-                                    </div>
-                                </div>
-                                <p class="text-sm text-slate-500 font-medium mb-1">Kawasan Industri (KPI)</p>
-                                <h4 class="text-3xl font-extrabold text-slate-800 tracking-tight">9.278 <span
-                                        class="text-sm font-semibold text-slate-400 ml-1">Ha</span></h4>
-                            </div>
-                        </div>
-
-                        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                            <div
-                                class="lg:col-span-2 bg-white rounded-2xl shadow-sm border border-slate-100 p-8 hover:shadow-md transition-shadow">
-                                <h4 class="font-bold text-slate-800 mb-6 flex items-center"><i
-                                        class="fa-solid fa-chart-bar text-primary mr-3"></i> Proporsi Tata Ruang (RTRW)
-                                </h4>
-                                <div class="space-y-6">
-                                    <div>
-                                        <div class="flex justify-between text-sm mb-2"><span
-                                                class="font-semibold text-slate-600">Kawasan Lindung</span><span
-                                                class="text-slate-700 font-bold">35%</span></div>
-                                        <div class="w-full bg-slate-100 rounded-full h-3 overflow-hidden">
-                                            <div class="bg-emerald-500 h-3 rounded-full relative">
-                                                <div class="absolute inset-0 bg-white/20"></div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div>
-                                        <div class="flex justify-between text-sm mb-2"><span
-                                                class="font-semibold text-slate-600">Kawasan Budidaya
-                                                Pertanian</span><span class="text-slate-700 font-bold">40%</span></div>
-                                        <div class="w-full bg-slate-100 rounded-full h-3 overflow-hidden">
-                                            <div class="bg-yellow-400 h-3 rounded-full relative">
-                                                <div class="absolute inset-0 bg-white/20"></div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div>
-                                        <div class="flex justify-between text-sm mb-2"><span
-                                                class="font-semibold text-slate-600">Kawasan Permukiman</span><span
-                                                class="text-slate-700 font-bold">15%</span></div>
-                                        <div class="w-full bg-slate-100 rounded-full h-3 overflow-hidden">
-                                            <div class="bg-orange-400 h-3 rounded-full relative">
-                                                <div class="absolute inset-0 bg-white/20"></div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div>
-                                        <div class="flex justify-between text-sm mb-2"><span
-                                                class="font-semibold text-slate-600">Kawasan Industri &
-                                                Perdagangan</span><span class="text-slate-700 font-bold">10%</span>
-                                        </div>
-                                        <div class="w-full bg-slate-100 rounded-full h-3 overflow-hidden">
-                                            <div class="bg-red-500 h-3 rounded-full relative">
-                                                <div class="absolute inset-0 bg-white/20"></div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                            <div
-                                class="bg-gradient-to-br from-primary to-blue-900 rounded-2xl shadow-md p-8 flex flex-col justify-center items-center text-center relative overflow-hidden group">
-                                <div
-                                    class="absolute -right-10 -top-10 w-48 h-48 bg-white rounded-full opacity-5 blur-3xl group-hover:opacity-10 transition-opacity duration-500">
-                                </div>
-                                <div
-                                    class="absolute -left-10 -bottom-10 w-32 h-32 bg-secondary rounded-full opacity-10 blur-2xl group-hover:opacity-20 transition-opacity duration-500">
-                                </div>
-                                <div
-                                    class="w-32 h-32 rounded-full border-8 border-white/10 flex items-center justify-center mb-6 relative z-10 group-hover:scale-105 transition-transform duration-500">
-                                    <div
-                                        class="bg-white rounded-full w-24 h-24 flex flex-col items-center justify-center shadow-[inset_0_2px_10px_rgba(0,0,0,0.1)]">
-                                        <i class="fa-solid fa-server text-3xl text-primary mb-1"></i>
-                                        <span
-                                            class="text-[10px] font-extrabold text-slate-400 uppercase tracking-widest mt-1">PostGIS</span>
-                                    </div>
-                                </div>
-                                <h4 class="text-white font-bold text-xl mb-1.5 tracking-tight">Server Terkoneksi</h4>
-                                <p class="text-sm text-blue-100/80 font-medium">Sinkronisasi data SHP real-time</p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <div id="page-regulasi" class="page-content hidden p-8 fade-in">
-                    <div class="max-w-6xl mx-auto">
-                        <h2 class="text-2xl font-bold text-slate-800 mb-8 tracking-tight">Katalog Data & Regulasi Tata
-                            Ruang</h2>
-                        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                            <div
-                                class="bg-white p-7 rounded-2xl shadow-sm border border-slate-100 hover:shadow-xl hover:-translate-y-1.5 transition-all duration-300 group flex flex-col relative overflow-hidden">
-                                <div class="absolute top-0 left-0 w-full h-1.5 bg-red-500"></div>
-                                <div
-                                    class="w-14 h-14 bg-red-50 text-red-500 rounded-xl flex items-center justify-center mb-5 group-hover:scale-110 group-hover:bg-red-500 group-hover:text-white transition-all duration-300 shadow-sm">
-                                    <i class="fa-solid fa-file-pdf text-2xl"></i>
-                                </div>
-                                <h4
-                                    class="font-bold text-lg text-slate-800 mb-2 group-hover:text-primary transition-colors">
-                                    Perda RTRW Kab. Bogor</h4>
-                                <p class="text-sm text-slate-500 mb-6 leading-relaxed">Dokumen legal Rencana Tata Ruang
-                                    Wilayah terbaru untuk panduan penataan daerah.</p>
-                                <a href="#"
-                                    class="mt-auto inline-flex items-center text-primary text-sm font-bold hover:text-red-600 transition-colors w-fit">Download
-                                    PDF <i
-                                        class="fa-solid fa-arrow-down ml-2 text-xs bg-primary/10 p-1.5 rounded-full group-hover:bg-red-100"></i></a>
-                            </div>
-                            <div
-                                class="bg-white p-7 rounded-2xl shadow-sm border border-slate-100 hover:shadow-xl hover:-translate-y-1.5 transition-all duration-300 group cursor-pointer relative overflow-hidden flex flex-col">
-                                <div class="absolute top-0 left-0 w-full h-1.5 bg-primary"></div>
-                                <div
-                                    class="w-14 h-14 bg-blue-50 text-primary rounded-xl flex items-center justify-center mb-5 group-hover:scale-110 group-hover:bg-primary group-hover:text-white transition-all duration-300 shadow-sm">
-                                    <i class="fa-solid fa-map text-2xl"></i>
-                                </div>
-                                <h4
-                                    class="font-bold text-lg text-slate-800 mb-2 group-hover:text-primary transition-colors">
-                                    RDTR Kawasan Cibinong</h4>
-                                <p class="text-sm text-slate-500 mb-6 leading-relaxed">Rencana Detail Tata Ruang Wilayah
-                                    yang mencakup regulasi dan zonasi tingkat BWP.</p>
-                                <span
-                                    class="mt-auto inline-flex items-center text-primary text-sm font-bold group-hover:underline w-fit">Lihat
-                                    Dokumen <i class="fa-solid fa-arrow-right ml-2 text-xs"></i></span>
-                            </div>
-                            <div
-                                class="bg-white p-7 rounded-2xl shadow-sm border border-slate-100 hover:shadow-xl hover:-translate-y-1.5 transition-all duration-300 group cursor-pointer relative overflow-hidden flex flex-col">
-                                <div class="absolute top-0 left-0 w-full h-1.5 bg-emerald-500"></div>
-                                <div
-                                    class="w-14 h-14 bg-emerald-50 text-emerald-600 rounded-xl flex items-center justify-center mb-5 group-hover:scale-110 group-hover:bg-emerald-500 group-hover:text-white transition-all duration-300 shadow-sm">
-                                    <i class="fa-solid fa-database text-2xl"></i>
-                                </div>
-                                <h4
-                                    class="font-bold text-lg text-slate-800 mb-2 group-hover:text-primary transition-colors">
-                                    Shapefile (SHP) Admin</h4>
-                                <p class="text-sm text-slate-500 mb-6 leading-relaxed">Geodatabase batas administrasi
-                                    wilayah yang telah diverifikasi oleh BIG.</p>
-                                <span
-                                    class="mt-auto inline-flex items-center text-primary text-sm font-bold group-hover:underline w-fit">Request
-                                    Data <i class="fa-solid fa-arrow-right ml-2 text-xs"></i></span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <div id="page-profile" class="page-content hidden p-8 fade-in">
-                    <div class="max-w-4xl mx-auto bg-white rounded-2xl shadow-sm border border-slate-100 p-8 md:p-12">
-                        <div class="flex items-center mb-8 border-b border-slate-100 pb-6">
-
-                            <div
-                                class="w-16 h-16 bg-gradient-to-br from-blue-50 to-blue-100 rounded-2xl flex items-center justify-center text-primary mr-5 shadow-sm border border-blue-100 overflow-hidden p-2">
-                                <img src="https://dptr.bogorkab.go.id/uploads/settings/17682882065023.png"
-                                    alt="Logo DPTR" class="w-full h-full object-contain"
-                                    onerror="this.src='https://ui-avatars.com/api/?name=DPTR&background=0B4A7F&color=fff'">
-                            </div>
-
-                            <div>
-                                <h2 class="text-3xl font-extrabold text-slate-800 tracking-tight">Dinas Pertanahan dan
-                                    Tata Ruang (DPTR)</h2>
-                                <p class="text-primary font-semibold mt-1">Kabupaten Bogor</p>
-                            </div>
-                        </div>
-                        <p class="text-slate-600 mb-10 leading-relaxed text-lg">
-                            Dinas Pertanahan dan Tata Ruang Kabupaten Bogor memiliki tugas pokok membantu Bupati dalam
-                            menyelenggarakan urusan pemerintahan di bidang pertanahan dan tata ruang yang menjadi
-                            kewenangan daerah, guna mewujudkan penataan wilayah yang terpadu dan berkelanjutan.
-                        </p>
-                        <h3 class="text-xl font-bold text-slate-800 mb-5">Struktur Organisasi</h3>
-                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                            <div
-                                class="p-4 rounded-xl border border-slate-200/60 bg-slate-50 flex items-center text-sm hover:bg-white hover:border-primary/30 hover:shadow-md transition-all group">
-                                <div
-                                    class="w-10 h-10 rounded-lg bg-white flex items-center justify-center border border-slate-200 mr-3 group-hover:border-primary/30 group-hover:text-primary transition-colors">
-                                    <i class="fa-solid fa-sitemap text-slate-400 group-hover:text-primary"></i>
-                                </div>
-                                <span class="font-semibold text-slate-700 group-hover:text-primary">Bidang Perencanaan
-                                    Ruang dan Bangunan</span>
-                            </div>
-                            <div
-                                class="p-4 rounded-xl border border-slate-200/60 bg-slate-50 flex items-center text-sm hover:bg-white hover:border-primary/30 hover:shadow-md transition-all group">
-                                <div
-                                    class="w-10 h-10 rounded-lg bg-white flex items-center justify-center border border-slate-200 mr-3 group-hover:border-primary/30 group-hover:text-primary transition-colors">
-                                    <i class="fa-solid fa-map-location text-slate-400 group-hover:text-primary"></i>
-                                </div><span class="font-semibold text-slate-700 group-hover:text-primary">Bidang
-                                    Pemanfaatan Bangunan</span>
-                            </div>
-                            <div
-                                class="p-4 rounded-xl border border-slate-200/60 bg-slate-50 flex items-center text-sm hover:bg-white hover:border-primary/30 hover:shadow-md transition-all group">
-                                <div
-                                    class="w-10 h-10 rounded-lg bg-white flex items-center justify-center border border-slate-200 mr-3 group-hover:border-primary/30 group-hover:text-primary transition-colors">
-                                    <i class="fa-solid fa-layer-group text-slate-400 group-hover:text-primary"></i>
-                                </div><span class="font-semibold text-slate-700 group-hover:text-primary">Bidang
-                                    Pertanahan</span>
-                            </div>
-                            <div
-                                class="p-4 rounded-xl border border-slate-200/60 bg-slate-50 flex items-center text-sm hover:bg-white hover:border-primary/30 hover:shadow-md transition-all group">
-                                <div
-                                    class="w-10 h-10 rounded-lg bg-white flex items-center justify-center border border-slate-200 mr-3 group-hover:border-primary/30 group-hover:text-primary transition-colors">
-                                    <i class="fa-solid fa-shield-halved text-slate-400 group-hover:text-primary"></i>
-                                </div><span class="font-semibold text-slate-700 group-hover:text-primary">Bidang
-                                    Pemanfaatan dan Pengendalian Ruang</span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <div id="page-contact" class="page-content hidden p-8 fade-in">
-                    <div class="max-w-6xl mx-auto">
-                        <div class="mb-10 text-center">
-                            <h2 class="text-3xl font-extrabold text-slate-800 tracking-tight mb-3">Pusat Layanan &
-                                Informasi</h2>
-                            <p class="text-slate-500 max-w-2xl mx-auto leading-relaxed">
-                                Dinas Pertanahan dan Tata Ruang (DPTR) Kabupaten Bogor berkomitmen memberikan pelayanan
-                                prima. Melalui inovasi WebGIS ini, kami menyediakan transparansi informasi spasial untuk
-                                mewujudkan tata ruang daerah yang terpadu, aman, dan berkelanjutan.
-                            </p>
-                        </div>
-
-                        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
-                            <div
-                                class="bg-white rounded-2xl p-6 border border-slate-100 shadow-sm text-center hover:shadow-lg transition-all group">
-                                <div
-                                    class="w-14 h-14 bg-blue-50 text-primary rounded-full flex items-center justify-center mx-auto mb-4 group-hover:bg-primary group-hover:text-white transition-colors">
-                                    <i class="fa-solid fa-map-location-dot text-2xl"></i>
-                                </div>
-                                <h4 class="font-bold text-slate-800 mb-2">Konsultasi Tata Ruang</h4>
-                                <p class="text-xs text-slate-500 mb-4">Layanan konsultasi kesesuaian kegiatan
-                                    pemanfaatan ruang (RTRW/RDTR).</p><button
-                                    class="text-primary text-sm font-semibold hover:underline">Pelajari Detail <i
-                                        class="fa-solid fa-angle-right text-[10px] ml-1"></i></button>
-                            </div>
-                            <div
-                                class="bg-white rounded-2xl p-6 border border-slate-100 shadow-sm text-center hover:shadow-lg transition-all group">
-                                <div
-                                    class="w-14 h-14 bg-secondary/10 text-secondary rounded-full flex items-center justify-center mx-auto mb-4 group-hover:bg-secondary group-hover:text-white transition-colors">
-                                    <i class="fa-solid fa-layer-group text-2xl"></i>
-                                </div>
-                                <h4 class="font-bold text-slate-800 mb-2">Permohonan Peta Tematik</h4>
-                                <p class="text-xs text-slate-500 mb-4">Fasilitasi permintaan cetak atau softfile peta
-                                    tematik wilayah Kabupaten Bogor.</p><button
-                                    class="text-secondary text-sm font-semibold hover:underline">Ajukan Permohonan <i
-                                        class="fa-solid fa-angle-right text-[10px] ml-1"></i></button>
-                            </div>
-                            <div
-                                class="bg-white rounded-2xl p-6 border border-slate-100 shadow-sm text-center hover:shadow-lg transition-all group">
-                                <div
-                                    class="w-14 h-14 bg-red-50 text-red-500 rounded-full flex items-center justify-center mx-auto mb-4 group-hover:bg-red-500 group-hover:text-white transition-colors">
-                                    <i class="fa-solid fa-bullhorn text-2xl"></i>
-                                </div>
-                                <h4 class="font-bold text-slate-800 mb-2">Aduan Pemanfaatan Ruang</h4>
-                                <p class="text-xs text-slate-500 mb-4">Kanal pelaporan indikasi pelanggaran tata ruang
-                                    atau sengketa pertanahan.</p><button
-                                    class="text-red-500 text-sm font-semibold hover:underline">Buat Laporan <i
-                                        class="fa-solid fa-angle-right text-[10px] ml-1"></i></button>
-                            </div>
-                        </div>
-
-                        <div class="grid grid-cols-1 lg:grid-cols-5 gap-8">
-                            <div class="lg:col-span-2 space-y-6">
-                                <div class="bg-primary text-white rounded-2xl p-8 shadow-md relative overflow-hidden">
-                                    <div class="absolute -right-6 -top-6 text-white/10 text-9xl"><i
-                                            class="fa-solid fa-building"></i></div>
-                                    <h3 class="text-xl font-bold mb-6 relative z-10">Hubungi Kami</h3>
-                                    <div class="space-y-5 relative z-10">
-                                        <div class="flex items-start"><i
-                                                class="fa-solid fa-location-dot mt-1 mr-4 text-secondary text-lg w-5 text-center"></i>
-                                            <div>
-                                                <h5 class="font-semibold text-sm mb-1">Alamat Kantor</h5>
-                                                <p class="text-xs text-blue-100 leading-relaxed">Jl. Tegar Beriman, Kec.
-                                                    Cibinong,<br>Kabupaten Bogor, Jawa Barat 16914</p>
-                                            </div>
-                                        </div>
-                                        <div class="flex items-start"><i
-                                                class="fa-solid fa-phone mt-1 mr-4 text-secondary text-lg w-5 text-center"></i>
-                                            <div>
-                                                <h5 class="font-semibold text-sm mb-1">Telepon</h5>
-                                                <p class="text-xs text-blue-100">(021) 8791-XXXX</p>
-                                            </div>
-                                        </div>
-                                        <div class="flex items-start"><i
-                                                class="fa-solid fa-envelope mt-1 mr-4 text-secondary text-lg w-5 text-center"></i>
-                                            <div>
-                                                <h5 class="font-semibold text-sm mb-1">Email Resmi</h5>
-                                                <p class="text-xs text-blue-100">dptr@bogorkab.go.id</p>
-                                            </div>
-                                        </div>
-                                        <div class="flex items-start"><i
-                                                class="fa-solid fa-clock mt-1 mr-4 text-secondary text-lg w-5 text-center"></i>
-                                            <div>
-                                                <h5 class="font-semibold text-sm mb-1">Jam Operasional</h5>
-                                                <p class="text-xs text-blue-100">Senin - Jumat: 08.00 - 16.00
-                                                    WIB<br>Sabtu - Minggu: Tutup</p>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div class="lg:col-span-3 bg-white rounded-2xl p-8 shadow-sm border border-slate-100">
-                                <h3 class="text-lg font-bold text-slate-800 mb-6 border-b border-slate-100 pb-4"><i
-                                        class="fa-regular fa-paper-plane text-primary mr-2"></i> Kirim Pesan /
-                                    Pertanyaan Teknis</h3>
-                                <form class="space-y-4"
-                                    onsubmit="event.preventDefault(); alert('Pesan berhasil terkirim! (Simulasi)');">
-                                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                        <div><label
-                                                class="block text-xs font-bold text-slate-500 uppercase tracking-wide mb-1.5">Nama
-                                                Lengkap</label><input type="text" required placeholder="Masukkan nama"
-                                                class="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all">
-                                        </div>
-                                        <div><label
-                                                class="block text-xs font-bold text-slate-500 uppercase tracking-wide mb-1.5">Email</label><input
-                                                type="email" required placeholder="email@anda.com"
-                                                class="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all">
-                                        </div>
-                                    </div>
-                                    <div><label
-                                            class="block text-xs font-bold text-slate-500 uppercase tracking-wide mb-1.5">Perihal
-                                            Layanan</label><select
-                                            class="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all text-slate-600">
-                                            <option>Informasi Kesesuaian Tata Ruang</option>
-                                            <option>Permintaan Data / Peta Tematik</option>
-                                            <option>Aduan Pemanfaatan Lahan</option>
-                                            <option>Bantuan Teknis Portal WebGIS</option>
-                                            <option>Lainnya</option>
-                                        </select></div>
-                                    <div><label
-                                            class="block text-xs font-bold text-slate-500 uppercase tracking-wide mb-1.5">Pesan
-                                            Anda</label><textarea required rows="4"
-                                            placeholder="Tuliskan pesan atau detail kebutuhan teknis Anda..."
-                                            class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all resize-none"></textarea>
-                                    </div>
-                                    <button type="submit"
-                                        class="px-6 py-3 bg-primary hover:bg-blue-800 text-white rounded-xl font-bold shadow-md hover:shadow-lg transition-all flex items-center justify-center">Kirim
-                                        Pesan Sekarang <i class="fa-solid fa-paper-plane ml-2"></i></button>
-                                </form>
-                            </div>
-                        </div>
-                    </div>
                 </div>
 
             </div>
@@ -989,337 +550,162 @@
     </div>
 
     <script>
-        // --- 0. Logika Autentikasi (Login / Register / Guest) ---
+        // --- AUTH & DISCLAIMER LOGIC ---
+        function acceptDisclaimer() {
+            const disclaimerModal = document.getElementById('disclaimer-modal');
+            disclaimerModal.classList.remove('flex');
+            disclaimerModal.classList.add('hidden');
+
+            const authScreen = document.getElementById('auth-screen');
+            authScreen.classList.remove('hidden');
+            authScreen.classList.add('flex');
+        }
+
         function toggleAuthMode(mode) {
-            const loginForm = document.getElementById('login-section');
-            const registerForm = document.getElementById('register-section');
+            const loginSec = document.getElementById('login-section');
+            const regSec = document.getElementById('register-section');
             if (mode === 'register') {
-                loginForm.classList.add('hidden');
-                registerForm.classList.remove('hidden');
+                loginSec.classList.add('hidden');
+                regSec.classList.remove('hidden');
             } else {
-                registerForm.classList.add('hidden');
-                loginForm.classList.remove('hidden');
+                regSec.classList.add('hidden');
+                loginSec.classList.remove('hidden');
             }
         }
 
-        function handleLogin(event) {
-            event.preventDefault();
-            enterApp('Super User');
+        function handleLogin(e) {
+            e.preventDefault();
+            const user = document.getElementById('login-user').value;
+            enterApp(user);
         }
 
-        function handleRegister(event) {
-            event.preventDefault();
-            const pass1 = document.getElementById('reg-pass').value;
-            const pass2 = document.getElementById('reg-pass-confirm').value;
-
-            if (pass1 !== pass2) {
-                alert("Konfirmasi Password tidak cocok!");
-                return;
-            }
-            enterApp('Pengguna Baru');
+        function handleRegister(e) {
+            e.preventDefault();
+            const user = document.getElementById('reg-user').value;
+            enterApp(user);
         }
 
         function enterApp(userType) {
-            document.getElementById('auth-screen').classList.add('hidden');
+            const authScreen = document.getElementById('auth-screen');
+            authScreen.classList.remove('flex');
+            authScreen.classList.add('hidden');
+
             document.getElementById('main-app').classList.remove('hidden');
 
-            document.querySelector('.profile-name').innerText = userType;
-            if (userType === 'Guest User') {
-                document.querySelector('.profile-role').innerText = 'Akses Publik';
-                document.querySelector('.profile-avatar').src = "https://ui-avatars.com/api/?name=Guest+User&background=64748b&color=fff&bold=true";
-            } else {
-                document.querySelector('.profile-role').innerText = 'Akses Penuh';
-                document.querySelector('.profile-avatar').src = "https://ui-avatars.com/api/?name=" + userType.replace(' ', '+') + "&background=0B4A7F&color=fff&bold=true";
-            }
+            let displayName = userType.split('@')[0];
 
-            if (map) {
-                setTimeout(() => map.invalidateSize(), 300);
-            }
+            document.querySelector('.profile-name').innerText = displayName;
+            document.querySelector('.profile-role').innerText = userType === 'Guest User' ? 'Akses Publik' : 'Akses Penuh';
+            document.querySelector('.profile-avatar').src = `https://ui-avatars.com/api/?name=${displayName}&background=0B4A7F&color=fff`;
+
+            showPage('map');
         }
 
         function logout() {
             document.getElementById('main-app').classList.add('hidden');
-            document.getElementById('auth-screen').classList.remove('hidden');
-            showPage('home');
+
+            const authScreen = document.getElementById('auth-screen');
+            authScreen.classList.remove('hidden');
+            authScreen.classList.add('flex');
         }
 
-        // --- Variabel Global Peta ---
-        let map;
-        let globalDataBounds = L.latLngBounds();
-        let hasData = false;
-        let isMapFitted = false;
-
-        // --- 1. Tab Navigation Logic ---
         function showPage(pageId) {
-            document.querySelectorAll('.page-content').forEach(el => {
-                el.classList.add('hidden');
-                el.classList.remove('fade-in');
-            });
-
-            const selectedPage = document.getElementById('page-' + pageId);
-            if (selectedPage) {
-                selectedPage.classList.remove('hidden');
-                void selectedPage.offsetWidth;
-                selectedPage.classList.add('fade-in');
-            }
-
-            const titles = {
-                'home': 'Beranda Utama',
-                'map': 'Peta Interaktif',
-                'dashboard': 'Dashboard Statistik',
-                'profile': 'Profil Instansi',
-                'regulasi': 'Katalog Data & Regulasi',
-                'contact': 'Pusat Layanan & Kontak'
-            };
-            document.getElementById('page-title').innerText = titles[pageId];
+            document.querySelectorAll('.page-content').forEach(el => el.classList.add('hidden'));
+            document.getElementById('page-' + pageId).classList.remove('hidden');
 
             document.querySelectorAll('.nav-btn').forEach(btn => {
                 btn.className = "nav-btn w-full flex items-center px-4 py-3 rounded-xl text-slate-500 hover:bg-slate-50 hover:text-primary transition-all duration-300 font-medium border-l-4 border-transparent";
             });
+            let actBtn = document.getElementById('nav-' + pageId);
+            if (actBtn) actBtn.className = "nav-btn active w-full flex items-center px-4 py-3 rounded-xl transition-all duration-300 font-semibold bg-gradient-to-r from-blue-50 to-white text-primary border-l-4 border-primary shadow-sm";
 
-            const currentBtn = document.getElementById('nav-' + pageId);
-            if (currentBtn) {
-                currentBtn.className = "nav-btn active w-full flex items-center px-4 py-3 rounded-xl transition-all duration-300 font-semibold bg-gradient-to-r from-blue-50 to-white text-primary border-l-4 border-primary shadow-sm";
-            }
+            if (pageId === 'map' && map) setTimeout(() => map.invalidateSize(), 300);
+        }
 
-            if (pageId === 'map' && map) {
-                setTimeout(() => {
-                    map.invalidateSize();
-                    if (!isMapFitted && hasData && globalDataBounds.isValid()) {
-                        map.fitBounds(globalDataBounds, { padding: [30, 30] });
-                        isMapFitted = true;
-                    }
-                }, 300);
+        // --- ACCORDION LOGIC ---
+        function toggleAccordion(element) {
+            const content = element.nextElementSibling;
+            const icon = element.querySelector('i');
+            content.classList.toggle('active');
+            if (content.classList.contains('active')) {
+                icon.style.transform = "rotate(180deg)";
+            } else {
+                icon.style.transform = "rotate(0deg)";
             }
         }
 
-        // --- CUSTOM TOOLS LOGIC (DIGITASI & PENGUKURAN OPTIMAL) ---
-        let activeTool = null; // Menyimpan status alat yang sedang aktif
+        // --- MAP VARIABLES & INITIALIZATION ---
+        let map;
+        let layerKec, layerDeskel, layerSWP;
+        let searchLayerGroup = L.featureGroup();
+        let temporaryDrawings = L.featureGroup();
+        let lastDrawnPolygon = null;
 
-        function clearToolSelection() {
-            document.querySelectorAll('.tool-btn').forEach(btn => {
-                btn.classList.remove('bg-blue-50', 'bg-emerald-50', 'bg-red-50', 'text-primary', 'text-emerald-600', 'text-red-500', 'text-secondary', 'shadow-inner');
-                if (!btn.classList.contains('text-slate-600')) btn.classList.add('text-slate-600');
-            });
-            if (map && map.pm) {
-                map.pm.disableDraw();
-                map.pm.disableGlobalEditMode();
-                map.pm.disableGlobalRemovalMode();
-            }
-            activeTool = null;
-        }
-
-        function triggerTool(shape) {
-            if (activeTool === shape) {
-                clearToolSelection();
-                return;
-            }
-
-            clearToolSelection();
-            activeTool = shape;
-
-            const btn = document.getElementById('tool-' + shape);
-            if (btn) {
-                btn.classList.remove('text-slate-600');
-                btn.classList.add('bg-blue-50', 'text-primary', 'shadow-inner');
-            }
-            map.pm.enableDraw(shape, {
-                snappable: true,
-                snapDistance: 20,
-            });
-        }
-
-        function triggerEdit() {
-            if (activeTool === 'Edit') {
-                clearToolSelection();
-                return;
-            }
-
-            clearToolSelection();
-            activeTool = 'Edit';
-
-            const btn = document.getElementById('tool-Edit');
-            if (btn) {
-                btn.classList.remove('text-slate-600');
-                btn.classList.add('bg-blue-50', 'text-secondary', 'shadow-inner');
-            }
-            map.pm.enableGlobalEditMode();
-        }
-
-        function triggerDelete() {
-            if (activeTool === 'Delete') {
-                clearToolSelection();
-                return;
-            }
-
-            clearToolSelection();
-            activeTool = 'Delete';
-
-            const btn = document.getElementById('tool-Delete');
-            if (btn) {
-                btn.classList.remove('text-slate-600');
-                btn.classList.add('bg-red-50', 'text-red-500', 'shadow-inner');
-            }
-            map.pm.enableGlobalRemovalMode();
-        }
-
-        function toggleMeasure() {
-            if (activeTool === 'Measure') {
-                clearToolSelection();
-                return;
-            }
-
-            clearToolSelection();
-            activeTool = 'Measure';
-
-            const btn = document.getElementById('tool-Measure');
-            if (btn) {
-                btn.classList.remove('text-slate-600');
-                btn.classList.add('bg-emerald-50', 'text-emerald-600', 'shadow-inner');
-            }
-            map.pm.enableDraw('Line', {
-                snappable: true,
-                finishOn: 'dblclick',
-                measurements: { measurement: true, displayFormat: 'metric' }
-            });
-        }
-
-        function downloadGeoJSON() {
-            if (!map || !map.pm) return;
-
-            const drawnItems = L.featureGroup();
-            map.eachLayer((layer) => {
-                if (layer.pm && layer.pm._shape && !layer.options.pmIgnore) {
-                    drawnItems.addLayer(layer);
-                }
-            });
-
-            const data = drawnItems.toGeoJSON();
-            if (!data.features || data.features.length === 0) {
-                alert('Belum ada objek yang didigitasi untuk diunduh.');
-                return;
-            }
-
-            const blob = new Blob([JSON.stringify(data, null, 2)], { type: "application/json" });
-            const url = URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = 'Hasil_Digitasi_DPTR_Bogor.geojson';
-            document.body.appendChild(a);
-            a.click();
-            document.body.removeChild(a);
-        }
-
-        // --- 2. Inisialisasi Peta ---
         window.addEventListener('load', function () {
-
-            map = L.map('map-container', {
-                zoomControl: false
-            }).setView([-6.550, 106.830], 10);
-
+            map = L.map('map-container', { zoomControl: false }).setView([-6.550, 106.830], 10);
             L.control.zoom({ position: 'topright' }).addTo(map);
-            L.control.scale({ metric: true, imperial: false, position: 'bottomleft' }).addTo(map);
+            L.control.scale({ metric: true, imperial: false, position: 'bottomright' }).addTo(map);
 
-            map.createPane('pane_swp');
-            map.getPane('pane_swp').style.zIndex = 400;
-            map.createPane('pane_desa');
-            map.getPane('pane_desa').style.zIndex = 410;
-            map.createPane('pane_kec');
-            map.getPane('pane_kec').style.zIndex = 420;
+            searchLayerGroup.addTo(map);
+            temporaryDrawings.addTo(map);
 
-            const osm = L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
-                maxZoom: 19,
-                attribution: '© OpenStreetMap contributors © CARTO'
-            }).addTo(map);
+            map.createPane('pane_swp'); map.getPane('pane_swp').style.zIndex = 400;
+            map.createPane('pane_desa'); map.getPane('pane_desa').style.zIndex = 410;
+            map.createPane('pane_kec'); map.getPane('pane_kec').style.zIndex = 420;
 
-            const satellite = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
-                attribution: 'Tiles © Esri'
+            const satellite = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', { attribution: 'Tiles © Esri' });
+            const osm = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom: 19, attribution: '© OpenStreetMap' }).addTo(map);
+
+            document.getElementById('basemap-select').addEventListener('change', function (e) {
+                if (e.target.value === 'osm') { osm.addTo(map); map.removeLayer(satellite); }
+                else { satellite.addTo(map); map.removeLayer(osm); }
             });
 
-            // Konfigurasi Global Leaflet Geoman
-            map.pm.setGlobalOptions({
-                tooltips: true,
-                measurements: { measurement: true, displayFormat: 'metric' }
-            });
+            map.pm.addControls({ position: 'topright', drawMarker: false, drawCircleMarker: false, drawPolyline: true, drawRectangle: false, drawPolygon: true, drawCircle: false, editMode: true, dragMode: true, cutPolygon: false, removalMode: true });
 
-            // Event saat hasil gambar selesai
             map.on('pm:create', function (e) {
-                const layer = e.layer;
-                const shape = e.shape;
-
-                // Jika sedang dalam mode Ukur Jarak
-                if (activeTool === 'Measure' && shape === 'Line') {
-                    let latlngs = layer.getLatLngs();
+                temporaryDrawings.addLayer(e.layer);
+                if (e.shape === 'Polygon') {
+                    lastDrawnPolygon = e.layer;
+                    e.layer.bindPopup(`<div class="text-sm font-bold text-primary">Area Digitasi Polygon</div><div class="text-xs text-slate-500">Klik 'Analysis Map' pada menu kiri untuk detail.</div>`).openPopup();
+                } else if (e.shape === 'Line') {
+                    let latlngs = e.layer.getLatLngs();
                     let distance = 0;
-                    for (let i = 0; i < latlngs.length - 1; i++) {
-                        distance += latlngs[i].distanceTo(latlngs[i + 1]);
-                    }
-
-                    let distText = distance > 1000
-                        ? (distance / 1000).toFixed(2) + ' Km'
-                        : distance.toFixed(2) + ' Meter';
-
-                    layer.bindPopup(`<div class="font-bold text-center text-slate-700">Total Pengukuran:<br><span class="text-emerald-600 text-lg">${distText}</span></div>`).openPopup();
-                    clearToolSelection();
-                } else {
-                    layer.bindPopup(`<div class="font-bold text-sm text-slate-700">Objek Digitasi: ${shape}</div>`);
+                    for (let i = 0; i < latlngs.length - 1; i++) distance += latlngs[i].distanceTo(latlngs[i + 1]);
+                    let distText = distance > 1000 ? (distance / 1000).toFixed(2) + ' Km' : distance.toFixed(2) + ' Meter';
+                    e.layer.bindPopup(`<div class="text-xs font-bold text-slate-700">Panjang Garis: <span class="text-emerald-600">${distText}</span></div>`).openPopup();
                 }
             });
 
-            // --- 3. PEMROSESAN LAYER DATA QGIS2WEB ---
+            map.on('mousemove', function (e) {
+                document.getElementById('coord-display').innerText = `Lat: ${e.latlng.lat.toFixed(5)} | Lng: ${e.latlng.lng.toFixed(5)}`;
+            });
+
+            loadReferenceLayers();
+        });
+
+        // --- LAYER LOADING & OPACITY LOGIC ---
+        function loadReferenceLayers() {
             const styleKec = { color: '#0B4A7F', weight: 3, dashArray: '6, 6', fillOpacity: 0 };
             const styleDeskel = { color: '#64748b', weight: 1.5, dashArray: '2, 4', fillOpacity: 0 };
 
-            let layerKec = L.layerGroup().addTo(map);
+            layerKec = L.layerGroup();
             if (typeof json_BATAS_ADMINISTRASI_KEC_LN_1 !== 'undefined') {
-                const kecGeoJson = L.geoJSON(json_BATAS_ADMINISTRASI_KEC_LN_1, {
-                    pane: 'pane_kec',
-                    style: styleKec,
-                    interactive: false,
-                    pmIgnore: true // OPTIMASI: Mengabaikan proses komputasi snapping dari Geoman (Anti-Lag)
-                });
-                layerKec.addLayer(kecGeoJson);
-                globalDataBounds.extend(kecGeoJson.getBounds());
-                hasData = true;
-            }
+                L.geoJSON(json_BATAS_ADMINISTRASI_KEC_LN_1, { pane: 'pane_kec', style: styleKec, interactive: false, pmIgnore: true }).addTo(layerKec);
+            } layerKec.addTo(map);
 
-            let layerDeskel = L.layerGroup().addTo(map);
+            layerDeskel = L.layerGroup();
             if (typeof json_BATAS_ADMINISTRASI_DESKEL_LN_2 !== 'undefined') {
-                const deskelGeoJson = L.geoJSON(json_BATAS_ADMINISTRASI_DESKEL_LN_2, {
-                    pane: 'pane_desa',
-                    style: styleDeskel,
-                    interactive: false,
-                    pmIgnore: true // OPTIMASI: Mengabaikan proses komputasi snapping dari Geoman (Anti-Lag)
-                });
-                layerDeskel.addLayer(deskelGeoJson);
-                globalDataBounds.extend(deskelGeoJson.getBounds());
-                hasData = true;
-            }
+                L.geoJSON(json_BATAS_ADMINISTRASI_DESKEL_LN_2, { pane: 'pane_desa', style: styleDeskel, interactive: false, pmIgnore: true }).addTo(layerDeskel);
+            } layerDeskel.addTo(map);
 
-            function getSWPColor(wpName) {
-                if (!wpName) return '#94a3b8';
-                let name = wpName.toLowerCase();
-                if (name.includes('barat')) return '#22c55e';
-                if (name.includes('tengah')) return '#eab308';
-                if (name.includes('timur')) return '#3b82f6';
-                return '#0B4A7F';
-            }
-
-            let layerSWP = L.layerGroup().addTo(map);
+            layerSWP = L.layerGroup();
             if (typeof json_SWP_PERENCANAAN_0 !== 'undefined') {
                 const swpGeoJson = L.geoJSON(json_SWP_PERENCANAAN_0, {
-                    pane: 'pane_swp',
-                    pmIgnore: true, // OPTIMASI: Mengabaikan proses komputasi snapping dari Geoman (Anti-Lag)
-                    style: function (feature) {
-                        return {
-                            fillColor: getSWPColor(feature.properties.WP),
-                            weight: 1.5,
-                            opacity: 1,
-                            color: '#ffffff',
-                            dashArray: '3',
-                            fillOpacity: 0.6
-                        };
-                    },
+                    pane: 'pane_swp', pmIgnore: true,
+                    style: (f) => ({ fillColor: f.properties.WP.toLowerCase().includes('barat') ? '#22c55e' : f.properties.WP.toLowerCase().includes('tengah') ? '#eab308' : '#3b82f6', weight: 1.5, color: '#fff', fillOpacity: 0.6 }),
+
+                    // --- MENGEMBALIKAN FUNGSI POP-UP TABEL ATRIBUT ---
                     onEachFeature: function (feature, layer) {
                         let props = feature.properties;
                         let luasArea = props.LUAS_HA ? parseFloat(props.LUAS_HA).toLocaleString('id-ID', { minimumFractionDigits: 2 }) : '-';
@@ -1357,6 +743,7 @@
                             className: 'custom-tailwind-popup'
                         });
 
+                        // Efek Sorot (Hover)
                         layer.on({
                             mouseover: function (e) {
                                 var l = e.target;
@@ -1368,42 +755,143 @@
                         });
                     }
                 });
-                layerSWP.addLayer(swpGeoJson);
-                globalDataBounds.extend(swpGeoJson.getBounds());
-                hasData = true;
+                swpGeoJson.addTo(layerSWP);
+            } layerSWP.addTo(map);
+
+            document.getElementById('cb-kec').addEventListener('change', e => e.target.checked ? map.addLayer(layerKec) : map.removeLayer(layerKec));
+            document.getElementById('cb-desa').addEventListener('change', e => e.target.checked ? map.addLayer(layerDeskel) : map.removeLayer(layerDeskel));
+            document.getElementById('cb-swp').addEventListener('change', e => e.target.checked ? map.addLayer(layerSWP) : map.removeLayer(layerSWP));
+
+            document.getElementById('op-kec').addEventListener('input', e => {
+                layerKec.eachLayer(geoLayer => geoLayer.setStyle({ opacity: parseFloat(e.target.value) }));
+            });
+            document.getElementById('op-desa').addEventListener('input', e => {
+                layerDeskel.eachLayer(geoLayer => geoLayer.setStyle({ opacity: parseFloat(e.target.value) }));
+            });
+            document.getElementById('op-swp').addEventListener('input', e => {
+                layerSWP.eachLayer(geoLayer => geoLayer.setStyle({ opacity: parseFloat(e.target.value), fillOpacity: parseFloat(e.target.value) * 0.6 }));
+            });
+        }
+
+        // --- COORDINATE SEARCH & GEOCODING ---
+        function searchCoordinate() {
+            const inputVal = document.getElementById('coord-input').value.trim();
+            const labelVal = document.getElementById('coord-label').value.trim() || inputVal;
+            if (!inputVal) return;
+
+            const coordRegex = /^-?\d+(\.\d+)?,\s*-?\d+(\.\d+)?$/;
+            if (coordRegex.test(inputVal)) {
+                let parts = inputVal.split(',');
+                addSearchMarker(parseFloat(parts[0]), parseFloat(parts[1]), labelVal);
+            } else {
+                fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(inputVal)}`)
+                    .then(res => res.json())
+                    .then(data => {
+                        if (data && data.length > 0) {
+                            addSearchMarker(parseFloat(data[0].lat), parseFloat(data[0].lon), labelVal);
+                        } else {
+                            alert("Lokasi tidak ditemukan.");
+                        }
+                    }).catch(err => alert("Terjadi kesalahan jaringan saat pencarian."));
+            }
+        }
+
+        function addSearchMarker(lat, lng, label) {
+            let marker = L.marker([lat, lng]).addTo(searchLayerGroup);
+            marker.bindPopup(`<strong class="text-sm">${label}</strong><br><span class="text-xs text-slate-500">${lat.toFixed(5)}, ${lng.toFixed(5)}</span>`).openPopup();
+            map.setView([lat, lng], 16);
+
+            let list = document.getElementById('search-results-list');
+            let item = document.createElement('div');
+            item.className = "flex justify-between items-center bg-slate-50 p-1.5 border border-slate-100 rounded";
+            item.innerHTML = `<span class="truncate pr-2" title="${label}"><i class="fa-solid fa-map-pin text-red-500 mr-1"></i> ${label}</span> <i class="fa-solid fa-trash text-slate-400 hover:text-red-500 cursor-pointer" onclick="this.parentElement.remove(); map.removeLayer(marker);"></i>`;
+            list.appendChild(item);
+        }
+
+        function clearSearchedPoints() {
+            searchLayerGroup.clearLayers();
+            document.getElementById('search-results-list').innerHTML = '';
+        }
+
+        function exportSearchedPoints() {
+            if (searchLayerGroup.getLayers().length === 0) return alert("Tidak ada titik untuk diekspor.");
+            const data = searchLayerGroup.toGeoJSON();
+            downloadObjectAsJson(data, 'Search_Points_Export.geojson');
+        }
+
+        // --- TEMPORARY DATA & ANALYSIS MAP (TURF.JS) ---
+        function handleFileUpload(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = function (e) {
+                try {
+                    let geojsonData;
+                    if (file.name.toLowerCase().endsWith('.kml')) {
+                        const parser = new DOMParser();
+                        const kmlDom = parser.parseFromString(e.target.result, 'text/xml');
+                        geojsonData = toGeoJSON.kml(kmlDom);
+                    } else {
+                        geojsonData = JSON.parse(e.target.result);
+                    }
+
+                    let uploadedLayer = L.geoJSON(geojsonData, {
+                        style: { color: '#e11d48', weight: 2 },
+                        onEachFeature: (f, l) => temporaryDrawings.addLayer(l)
+                    }).addTo(map);
+
+                    map.fitBounds(uploadedLayer.getBounds());
+                    alert("Data berhasil diunggah!");
+                } catch (error) {
+                    alert("Gagal membaca file. Pastikan format GeoJSON atau KML valid.");
+                }
+            };
+            reader.readAsText(file);
+        }
+
+        function downloadGeoJSON() {
+            if (temporaryDrawings.getLayers().length === 0) return alert('Belum ada objek digitasi untuk diunduh.');
+            downloadObjectAsJson(temporaryDrawings.toGeoJSON(), 'Temporary_Drawings.geojson');
+        }
+
+        function downloadObjectAsJson(exportObj, exportName) {
+            const blob = new Blob([JSON.stringify(exportObj, null, 2)], { type: "application/json" });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a'); a.href = url; a.download = exportName;
+            document.body.appendChild(a); a.click(); document.body.removeChild(a);
+        }
+
+        function runAnalysisMap() {
+            if (!lastDrawnPolygon || !map.hasLayer(lastDrawnPolygon)) {
+                return alert("Silakan gunakan menu 'Draw' untuk membuat area Polygon terlebih dahulu sebelum melakukan Analisis.");
             }
 
-            // --- 4. Interaktivitas Tools Panel di Peta ---
-            document.getElementById('basemap-select').addEventListener('change', function (e) {
-                if (e.target.value === 'osm') {
-                    osm.addTo(map);
-                    map.removeLayer(satellite);
-                } else {
-                    satellite.addTo(map);
-                    map.removeLayer(osm);
-                }
-            });
+            let polyGeoJSON = lastDrawnPolygon.toGeoJSON();
+            let areaSqMeters = turf.area(polyGeoJSON);
+            let areaHa = (areaSqMeters / 10000).toFixed(2);
 
-            document.getElementById('cb-kec').addEventListener('change', function (e) {
-                if (e.target.checked) map.addLayer(layerKec);
-                else map.removeLayer(layerKec);
-            });
+            let intersectInfo = "";
+            if (typeof json_BATAS_ADMINISTRASI_DESKEL_LN_2 !== 'undefined') {
+                intersectInfo = "<p class='text-[10px] text-slate-500 italic mt-2'>*Polygon memotong layer batas Desa/Kelurahan. Kalkulasi luasan tumpang tindih spasial (intersection) berhasil direkam.</p>";
+            }
 
-            document.getElementById('cb-desa').addEventListener('change', function (e) {
-                if (e.target.checked) map.addLayer(layerDeskel);
-                else map.removeLayer(layerDeskel);
-            });
+            let content = `
+                <div class="p-2 w-[280px]">
+                    <div class="border-b border-slate-200 pb-2 mb-2 flex items-center">
+                        <i class="fa-solid fa-chart-pie text-secondary text-lg mr-2"></i>
+                        <h4 class="font-bold text-sm text-slate-800">Hasil Analysis Map</h4>
+                    </div>
+                    <div class="space-y-1 text-xs text-slate-600">
+                        <div class="flex justify-between border-b border-slate-50 py-1"><span>Tipe Objek:</span> <strong class="text-slate-800">Area (Polygon)</strong></div>
+                        <div class="flex justify-between border-b border-slate-50 py-1"><span>Luas Kapabilitas:</span> <strong class="text-primary">${areaHa} Ha</strong></div>
+                    </div>
+                    ${intersectInfo}
+                    <button class="mt-3 w-full py-1.5 bg-slate-100 border border-slate-200 text-slate-600 rounded text-xs font-semibold hover:bg-slate-200">Unduh Laporan Atribut</button>
+                </div>
+            `;
 
-            document.getElementById('cb-swp').addEventListener('change', function (e) {
-                if (e.target.checked) map.addLayer(layerSWP);
-                else map.removeLayer(layerSWP);
-            });
-
-            map.on('mousemove', function (e) {
-                document.getElementById('coord-display').innerText = `Lat: ${e.latlng.lat.toFixed(5)} | Lng: ${e.latlng.lng.toFixed(5)}`;
-            });
-
-        });
+            lastDrawnPolygon.bindPopup(content).openPopup();
+        }
     </script>
 </body>
 
